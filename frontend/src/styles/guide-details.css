@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
+:root { --gd-navy-900: #081326; --gd-navy-800: #0f2547; --gd-teal-700: #145765; --gd-teal-500: #20c4af; --gd-amber-500: #ffb02e; --gd-amber-600: #f08f19; --gd-text-main: #f2f7fb; --gd-text-soft: #a9bdcf; --gd-card-bg: rgba(255,255,255,0.08); --gd-card-border: rgba(255,255,255,0.16); --gd-glow: rgba(255,176,46,0.35); }
+* { box-sizing: border-box; }
+.guide-details-page { min-height: 100vh; padding: 120px 20px 50px; background: radial-gradient(1000px 500px at 15% -10%, rgba(32,196,175,0.18), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(255,176,46,0.15), transparent 55%), linear-gradient(135deg, var(--gd-navy-900), var(--gd-navy-800) 45%, var(--gd-teal-700) 100%); color: var(--gd-text-main); }
+.guide-details-shell { width: min(980px,100%); margin: 0 auto; }
+.guide-page-actions { margin-bottom: 16px; }
+.guide-back-link { color: var(--gd-text-soft); text-decoration: none; font-weight: 600; transition: 0.25s ease; }
+.guide-back-link:hover { color: var(--gd-text-main); }
+.guide-profile-card, .guide-loading-card, .guide-error-card { background: var(--gd-card-bg); border: 1px solid var(--gd-card-border); border-radius: 28px; backdrop-filter: blur(18px); box-shadow: 0 25px 60px rgba(1,9,24,0.45); padding: 30px; }
+.guide-loading-card, .guide-error-card { text-align: center; padding: 50px 30px; }
+.guide-profile-head { display: grid; grid-template-columns: 280px 1fr; gap: 26px; margin-bottom: 26px; }
+.guide-photo-wrap { width: 100%; aspect-ratio: 1; border-radius: 22px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); }
+.guide-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.guide-primary h1 { margin: 0; font-size: clamp(2rem,4.2vw,2.8rem); }
+.guide-location { margin: 10px 0 16px; color: var(--gd-text-soft); font-weight: 500; }
+.guide-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.guide-stars { display: flex; gap: 4px; color: var(--gd-amber-500); font-size: 1.1rem; }
+.guide-meta-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.guide-meta-chips span { border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 999px; color: #dbebf8; font-size: 0.84rem; }
+.guide-cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.guide-btn { display: inline-flex; padding: 11px 18px; border-radius: 999px; font-weight: 700; text-decoration: none; transition: 0.25s ease; }
+.guide-btn.primary { background: linear-gradient(135deg, var(--gd-amber-500), var(--gd-amber-600)); color: #1b1b1b; box-shadow: 0 10px 25px var(--gd-glow); }
+.guide-btn.secondary { border: 1px solid rgba(255,255,255,0.24); background: rgba(255,255,255,0.08); color: var(--gd-text-main); }
+.guide-section { margin-top: 22px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 18px; }
+.guide-section h2 { margin: 0 0 10px; font-size: 1.2rem; }
+.guide-language-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.guide-language-chip { border-radius: 999px; padding: 8px 12px; background: rgba(32,196,175,0.18); border: 1px solid rgba(32,196,175,0.32); color: #d9f8f3; font-size: 0.86rem; font-weight: 600; }
+.guide-contact-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.guide-contact-item { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.guide-contact-item .contact-label { color: var(--gd-text-soft); font-size: 0.8rem; text-transform: uppercase; }
+.guide-skill { margin-top: 12px; }
+.guide-skill-row { display: flex; justify-content: space-between; margin-bottom: 6px; color: #d6e6f4; font-size: 0.9rem; }
+.guide-skill-track { width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.12); overflow: hidden; }
+.guide-skill-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2dd4bf, #ffc857); }
+.guide-footer-note { margin-top: 24px; color: var(--gd-text-soft); font-size: 0.95rem; }
+@media (max-width: 900px) { .guide-profile-head { grid-template-columns: 1fr; } .guide-contact-grid { grid-template-columns: 1fr; } }
