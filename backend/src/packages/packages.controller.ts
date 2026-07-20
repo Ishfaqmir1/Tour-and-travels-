@@ -64,6 +64,7 @@ export class PackagesController {
         location: p.location,
         country: p.country,
         destination: p.destination,
+        category: p.category,
         duration: p.duration,
         price: Number(p.price),
         discount_percent: p.discountPercent,
@@ -105,6 +106,7 @@ export class PackagesController {
         video: pkg.video,
         location: pkg.location,
         country: pkg.country,
+        category: pkg.category,
         destination: pkg.destination ? {
           id: pkg.destination.id,
           title: pkg.destination.title,
@@ -154,6 +156,7 @@ export class PackagesController {
         image: body.image,
         images: body.images ? JSON.stringify(body.images) : null,
         video: body.video,
+        category: body.category,
         location: body.location,
         country: body.country,
         destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
@@ -171,15 +174,40 @@ export class PackagesController {
         bestSeason: body.best_season,
         cancellationPolicy: body.cancellation_policy,
         isFeatured: body.is_featured || false,
+        isActive: body.is_active !== undefined ? body.is_active : true,
         metaTitle: body.meta_title,
         metaDescription: body.meta_description,
+        days: body.days ? {
+          create: body.days.map((d: any, i: number) => ({
+            dayNumber: d.day_number || i + 1,
+            title: d.title || '',
+            description: d.description || '',
+            activities: d.activities ? JSON.stringify(d.activities) : null,
+            meals: d.meals || null,
+            hotel: d.hotel || null,
+          })),
+        } : undefined,
       },
     });
-    return { status: 'success', data: pkg };
+
+    // Refetch with days included
+    const created = await this.prisma.package.findUnique({
+      where: { id: pkg.id },
+      include: {
+        days: { orderBy: { dayNumber: 'asc' } },
+      },
+    });
+
+    return { status: 'success', data: created };
   }
 
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+    // If days provided, delete existing and recreate
+    if (body.days) {
+      await this.prisma.packageDay.deleteMany({ where: { packageId: id } });
+    }
+
     const pkg = await this.prisma.package.update({
       where: { id },
       data: {
@@ -187,9 +215,12 @@ export class PackagesController {
         image: body.image,
         images: body.images ? JSON.stringify(body.images) : undefined,
         video: body.video,
+        category: body.category,
         location: body.location,
         country: body.country,
-        destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
+        destinationId: body.destination_id !== undefined
+          ? (body.destination_id ? parseInt(body.destination_id, 10) : null)
+          : undefined,
         duration: body.duration,
         price: body.price ? parseFloat(body.price) : undefined,
         discountPercent: body.discount_percent !== undefined ? parseInt(body.discount_percent, 10) : undefined,
@@ -206,9 +237,28 @@ export class PackagesController {
         isActive: body.is_active,
         metaTitle: body.meta_title,
         metaDescription: body.meta_description,
+        days: body.days ? {
+          create: body.days.map((d: any, i: number) => ({
+            dayNumber: d.day_number || i + 1,
+            title: d.title || '',
+            description: d.description || '',
+            activities: d.activities ? JSON.stringify(d.activities) : null,
+            meals: d.meals || null,
+            hotel: d.hotel || null,
+          })),
+        } : undefined,
       },
     });
-    return { status: 'success', data: pkg };
+
+    // Refetch with days
+    const updated = await this.prisma.package.findUnique({
+      where: { id },
+      include: {
+        days: { orderBy: { dayNumber: 'asc' } },
+      },
+    });
+
+    return { status: 'success', data: updated };
   }
 
   @Delete(':id')

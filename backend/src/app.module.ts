@@ -19,9 +19,11 @@ import { BookingsModule } from './bookings/bookings.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TaxisModule } from './taxis/taxis.module';
 import { RolesModule } from './roles/roles.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
+    UploadModule,
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,

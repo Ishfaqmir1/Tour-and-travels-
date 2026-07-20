@@ -113,6 +113,7 @@ model Package {
   highlights      String?  // JSON array
   included        String?  // JSON array
   excluded        String?  // JSON array
+  category        String?
   hotels          String?  // JSON array
   meals           String?  // JSON array
   transportation  String?
