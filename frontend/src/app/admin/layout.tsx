@@ -12,6 +12,7 @@ const sidebarItems = [
   { key: 'packages', label: 'Packages', icon: '🎫' },
   { key: 'destinations', label: 'Destinations', icon: '📍' },
   { key: 'hotels', label: 'Hotels', icon: '🏨' },
+  { key: 'tour-guides', label: 'Tour Guides', icon: '🧑‍🏫' },
   { key: 'taxis', label: 'Taxi', icon: '🚕' },
   { key: 'gallery', label: 'Gallery', icon: '🖼️' },
   { key: 'bookings', label: 'Bookings', icon: '📋' },
