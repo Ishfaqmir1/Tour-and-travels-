@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('api/tour-guides')
@@ -66,8 +66,9 @@ export class TourGuidesController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
+    const numericId = parseInt(id, 10);
     const guide = await this.prisma.tourGuide.findUnique({
-      where: { id: parseInt(id, 10) },
+      where: { id: numericId },
       include: {
         destination: {
           select: { id: true, slug: true, title: true, country: true, city: true, locationLabel: true },
@@ -106,5 +107,54 @@ export class TourGuidesController {
           : null,
       },
     };
+  }
+
+  @Post()
+  async create(@Body() body: any) {
+    const guide = await this.prisma.tourGuide.create({
+      data: {
+        name: body.name,
+        photo: body.photo || '',
+        description: body.description || '',
+        rating: body.rating ? parseInt(body.rating, 10) : 5,
+        location: body.location || '',
+        experienceYears: body.experience_years ? parseInt(body.experience_years, 10) : 0,
+        languages: body.languages || '',
+        hireCost: body.hire_cost ? parseFloat(body.hire_cost) : null,
+        phone: body.phone || null,
+        email: body.email || null,
+        destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
+      },
+    });
+    return { status: 'success', data: guide };
+  }
+
+  @Put(':id')
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+    const guide = await this.prisma.tourGuide.update({
+      where: { id },
+      data: {
+        name: body.name,
+        photo: body.photo,
+        description: body.description,
+        rating: body.rating !== undefined ? parseInt(body.rating, 10) : undefined,
+        location: body.location,
+        experienceYears: body.experience_years !== undefined ? parseInt(body.experience_years, 10) : undefined,
+        languages: body.languages,
+        hireCost: body.hire_cost !== undefined ? parseFloat(body.hire_cost) : undefined,
+        phone: body.phone,
+        email: body.email,
+        destinationId: body.destination_id !== undefined
+          ? (body.destination_id ? parseInt(body.destination_id, 10) : null)
+          : undefined,
+      },
+    });
+    return { status: 'success', data: guide };
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.prisma.tourGuide.delete({ where: { id } });
+    return { status: 'success', message: 'Tour guide deleted successfully' };
   }
 }
