@@ -1,0 +1,38 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+
+# Vite / React
+dist/
+.client-dist/
+client/dist/
+client/node_modules/
+client/.vite/
+client/.tmp/
+client/*.log
+client/.env
+client/vite.config.tsbuildinfo
+
+# Laravel / PHP
+server/vendor/
+server/.env
+server/storage/
+server/bootstrap/cache/
+server/.idea/
+server/.vscode/
+server/.phpunit.result.cache
+
+# System files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Build artifacts
+*.tsbuildinfo
+backend/dist
+node_modules/
