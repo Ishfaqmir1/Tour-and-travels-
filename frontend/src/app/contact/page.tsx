@@ -44,9 +44,9 @@ export default function ContactPage() {
         <h1>Contact THE VICEROY TOUR & TRAVELS ✈️</h1>
         <p>Have questions about destinations, bookings or tour guides? We're here to help you plan your perfect journey.</p>
         <div className="contact-info">
-          📧 Email: support@viceroytravels.com <br />
-          📞 Phone: +880 1234-567890 <br />
-          📍 Location: Dhaka, Bangladesh
+          📧 Email: mallamajid32@gmail.com <br />
+          📞 Phone: 9103815702 <br />
+          📍 Location: Shopian, Jammu and Kashmir
         </div>
         <Link href="/" className="btn-home">← Back to Homepage</Link>
       </div>

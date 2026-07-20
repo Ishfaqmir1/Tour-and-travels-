@@ -16,7 +16,7 @@ export default function TourGuidePage() {
         <div className="tourguide-hero-overlay"></div>
         <div className="tourguide-hero-content">
           <span className="tourguide-eyebrow">Choose Your Destination</span>
-          <h1>5 Tour Places, Local Guides, Better Travel Decisions</h1>
+          <h1>6 Tour Places, Local Guides, Better Travel Decisions</h1>
           <p>Pick a destination first, then open a dedicated page for that place. Customers can view the destination image, description, and the local guide list fetched directly from the database.</p>
           <div className="tourguide-stats">
             <div className="tourguide-stat-card"><strong>{isLoading ? '...' : destinations?.length || 0}</strong><span>Tour Places</span></div>
@@ -88,11 +88,11 @@ export default function TourGuidePage() {
             <p>Pick the right place. Meet the right guide. Travel with confidence.</p>
             <div className="footer-social"><a href="#">Y</a><a href="#">T</a><a href="#">F</a><a href="#">I</a></div>
           </div>
-          <div className="footer-box"><h3>Destinations</h3><ul><li>Paris</li><li>Tokyo</li><li>Cape Town</li></ul></div>
+          <div className="footer-box"><h3>Destinations</h3><ul><li>Srinagar</li><li>Gulmarg</li><li>Leh-Ladakh</li></ul></div>
           <div className="footer-box"><h3>Guide Flow</h3><ul><li>Choose a place</li><li>Compare local guides</li><li>Select and book</li></ul></div>
-          <div className="footer-box"><h3>Support</h3><ul><li>📍 Travel planning support</li><li>📧 support@viceroytravels.com</li><li>📞 +880 1700 000000</li></ul></div>
+          <div className="footer-box"><h3>Contact</h3><ul><li>📍 Shopian, Jammu and Kashmir</li><li>📧 mallamajid32@gmail.com</li><li>📞 9103815702</li></ul></div>
         </div>
-        <div className="footer-bottom">© 2026 THE VICEROY TOUR & TRAVELS. All Rights Reserved</div>
+        <div className="footer-bottom">© 2026 THE VICEROY TOUR & TRAVELS. All Rights Reserved<br /><span style={{ opacity: 0.8, fontSize: '0.85rem' }}>Developed by Ishfaq Mir — mirishfaq01@gmail.com</span></div>
       </footer>
     </div>
   );

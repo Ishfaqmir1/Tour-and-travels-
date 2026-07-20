@@ -296,13 +296,13 @@ export default function AboutPage() {
             </div>
             <div className="footer-contact-main">
               <h4>Contact</h4>
-              <p>📍 123 Travel Street</p>
-              <p>📧 hello@viceroytravels.com</p>
-              <p>📞 +1 234 567 890</p>
+              <p>📍 Shopian, Jammu and Kashmir</p>
+              <p>📧 mallamajid32@gmail.com</p>
+              <p>📞 9103815702</p>
             </div>
           </div>
           <div className="footer-bottom-main">
-            <p>© 2026 THE VICEROY TOUR & TRAVELS. All Rights Reserved.</p>
+            <p>© 2026 THE VICEROY TOUR & TRAVELS. All Rights Reserved.<br /><span style={{ opacity: 0.8, fontSize: '0.85rem' }}>Developed by Ishfaq Mir — mirishfaq01@gmail.com</span></p>
           </div>
         </div>
       </footer>

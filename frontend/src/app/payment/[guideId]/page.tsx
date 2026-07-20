@@ -90,9 +90,9 @@ export default function PaymentPage() {
           </div>
           <div className="voucher-grid">
             <div className="voucher-item"><span>Duration</span><strong>{success.days || days} day{(success.days || days) > 1 ? 's' : ''}</strong></div>
-            <div className="voucher-item"><span>Rate</span><strong>${Number(guide?.hire_cost || 0).toFixed(2)} / day</strong></div>
+            <div className="voucher-item"><span>Rate</span><strong>₹{Number(guide?.hire_cost || 0).toLocaleString('en-IN')} / day</strong></div>
             <div className="voucher-item"><span>Payment</span><strong>{success.card_brand || 'Card'} ****{success.card_last_four || '0000'}</strong></div>
-            <div className="voucher-item total"><span>Total Charged</span><strong>${Number(success.amount || totalCost).toFixed(2)} USD</strong></div>
+            <div className="voucher-item total"><span>Total Charged</span><strong>₹{Number(success.amount || totalCost).toLocaleString('en-IN')}</strong></div>
           </div>
           <div className="voucher-note">A confirmation email has been sent to your registered email address.</div>
           <div className="voucher-actions">
@@ -116,8 +116,8 @@ export default function PaymentPage() {
           <div className="payment-details">
             <p>📍 <strong>{guide.location}</strong></p>
             <p>⭐ Rating: {guide.rating}/5 • {guide.experience_years} years exp.</p>
-            <p>💰 <strong>${Number(guide.hire_cost || 0).toFixed(2)}</strong> / day</p>
-            <p>Total: <strong>${totalCost} USD</strong> for {days || 1} day{(days || 1) > 1 ? 's' : ''}</p>
+            <p>💰 <strong>₹{Number(guide.hire_cost || 0).toLocaleString('en-IN')}</strong> / day</p>
+            <p>Total: <strong>₹{Number(totalCost).toLocaleString('en-IN')}</strong> for {days || 1} day{(days || 1) > 1 ? 's' : ''}</p>
           </div>
         )}
 
@@ -162,7 +162,7 @@ export default function PaymentPage() {
             </div>
           </div>
           <motion.button type="submit" className="btn-pay" disabled={paymentMutation.isPending} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            {paymentMutation.isPending ? 'Processing...' : `Pay $${totalCost} USD`}
+            {paymentMutation.isPending ? 'Processing...' : `Pay ₹${Number(totalCost).toLocaleString('en-IN')}`}
           </motion.button>
         </form>
       </motion.div>

@@ -29,11 +29,11 @@ const scaleIn = {
 };
 
 const galleryImages = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80', title: 'Swiss Alps', location: 'Switzerland' },
-  { id: 2, src: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80', title: 'Tropical Beach', location: 'Maldives' },
-  { id: 3, src: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80', title: 'Kyoto Temples', location: 'Japan' },
-  { id: 4, src: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=600&q=80', title: 'Santorini Sunset', location: 'Greece' },
-  { id: 5, src: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80', title: 'Paris Lights', location: 'France' },
+  { id: 1, src: 'https://images.unsplash.com/photo-1597432538815-1c262b1cf777?auto=format&fit=crop&w=800&q=80', title: 'Dal Lake', location: 'Srinagar, Kashmir' },
+  { id: 2, src: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?auto=format&fit=crop&w=600&q=80', title: 'Gulmarg Meadows', location: 'Gulmarg, Kashmir' },
+  { id: 3, src: 'https://images.unsplash.com/photo-1597131686427-35eefb6f7e7f?auto=format&fit=crop&w=600&q=80', title: 'Pangong Tso', location: 'Ladakh' },
+  { id: 4, src: 'https://images.unsplash.com/photo-1586339949916-3e5457d58f1c?auto=format&fit=crop&w=600&q=80', title: 'Sonamarg Glacier', location: 'Sonamarg, Kashmir' },
+  { id: 5, src: 'https://images.unsplash.com/photo-1597432538361-a9b450880e3c?auto=format&fit=crop&w=600&q=80', title: 'Betaab Valley', location: 'Pahalgam, Kashmir' },
 ];
 
 const whyChooseUs = [
@@ -280,13 +280,13 @@ export default function Home() {
           <div className="footer-box">
             <h3>Contact</h3>
             <ul>
-              <li>📍 Dhaka, Bangladesh</li>
-              <li>📧 support@viceroytravels.com</li>
-              <li>📞 00022200222</li>
+              <li>📍 Shopian, Jammu and Kashmir</li>
+              <li>📧 mallamajid32@gmail.com</li>
+              <li>📞 9103815702</li>
             </ul>
           </div>
         </div>
-        <div className="footer-bottom">© {new Date().getFullYear()} THE VICEROY TOUR & TRAVELS. All Rights Reserved</div>
+        <div className="footer-bottom">© {new Date().getFullYear()} THE VICEROY TOUR & TRAVELS. All Rights Reserved<br /><span style={{ opacity: 0.8, fontSize: '0.85rem' }}>Developed by Ishfaq Mir — mirishfaq01@gmail.com</span></div>
       </footer>
     </div>
   );

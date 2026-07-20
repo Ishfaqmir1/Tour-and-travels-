@@ -98,7 +98,7 @@ export default function DestinationDetailsPage() {
               {destination.guides.map((guide: any) => {
                 const languages = (guide.languages || '').split(',').map((l: string) => l.trim()).filter(Boolean);
                 const hireCost = Number(guide.hire_cost);
-                const formattedCost = Number.isFinite(hireCost) ? `$${hireCost.toFixed(2)}/day` : 'Contact for pricing';
+                const formattedCost = Number.isFinite(hireCost) ? `₹${hireCost.toLocaleString('en-IN')}/day` : 'Contact for pricing';
                 return (
                   <article className="destination-guide-card" key={guide.id}>
                     <div className="destination-guide-image">
