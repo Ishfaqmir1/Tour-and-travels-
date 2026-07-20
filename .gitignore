@@ -36,3 +36,4 @@ server/.phpunit.result.cache
 *.tsbuildinfo
 backend/dist
 node_modules/
+*.db
