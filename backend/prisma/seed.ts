@@ -22,8 +22,8 @@ async function main() {
       email: 'admin@viceroytravels.com',
       password: adminPassword,
       isSuperAdmin: true,
-      phone: '+880 1700-000000',
-      address: 'Dhaka, Bangladesh',
+      phone: '9103815702',
+      address: 'Shopian, Jammu and Kashmir',
     },
   });
   console.log(`✅ Created admin user: ${admin.email} (password: password123)`);
@@ -35,239 +35,162 @@ async function main() {
       name: 'John Doe',
       email: 'user@viceroytravels.com',
       password: userPassword,
-      phone: '+880 1700-000001',
-      address: 'Dhaka, Bangladesh',
+      phone: '9103815702',
+      address: 'Shopian, Jammu and Kashmir',
     },
   });
   console.log(`✅ Created test user: ${user.email} (password: password123)`);
 
-  // Create destinations
-  const destinations = await Promise.all([
-    prisma.tourDestination.create({
-      data: {
-        slug: 'santorini-greece',
-        title: 'Santorini',
-        country: 'Greece',
-        city: 'Santorini',
-        locationLabel: 'Santorini, Cyclades, Greece',
-        image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'Experience the iconic white-washed buildings and stunning sunsets of Santorini.',
-        description: 'Santorini is a stunning volcanic island in the Cyclades group of the Greek islands. Known for its dramatic views, stunning sunsets, white-washed buildings, and blue-domed churches, it offers an unforgettable travel experience. Explore the charming villages of Oia and Fira, relax on unique red and black sand beaches, and taste exquisite local wines.',
-        duration: '5-7 Days',
-        price: '$1,200 - $2,500',
-        rating: 4.8,
-      },
-    }),
-    prisma.tourDestination.create({
-      data: {
-        slug: 'kyoto-japan',
-        title: 'Kyoto',
-        country: 'Japan',
-        city: 'Kyoto',
-        locationLabel: 'Kyoto, Kansai, Japan',
-        image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'Discover ancient temples, traditional tea ceremonies, and cherry blossoms in Kyoto.',
-        description: 'Kyoto, once the capital of Japan, is a city where tradition meets natural beauty. Home to thousands of classical Buddhist temples, gardens, imperial palaces, Shinto shrines, and traditional wooden houses, it offers a deep dive into Japanese culture. Visit the golden Kinkaku-ji, walk through the bamboo grove of Arashiyama, and experience a traditional tea ceremony.',
-        duration: '4-6 Days',
-        price: '$1,500 - $3,000',
-        rating: 4.9,
-      },
-    }),
-    prisma.tourDestination.create({
-      data: {
-        slug: 'paris-france',
-        title: 'Paris',
-        country: 'France',
-        city: 'Paris',
-        locationLabel: 'Paris, Île-de-France, France',
-        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'The City of Light awaits with its iconic landmarks, world-class cuisine, and romantic ambiance.',
-        description: 'Paris, the capital of France, is one of the most iconic cities in the world. From the Eiffel Tower to the Louvre Museum, from charming sidewalk cafés to world-class fashion boutiques, Paris offers an endless array of experiences. Explore historic neighborhoods like Montmartre and Le Marais, savor French cuisine, and immerse yourself in art and culture.',
-        duration: '4-7 Days',
-        price: '$1,800 - $4,000',
-        rating: 4.7,
-      },
-    }),
-    prisma.tourDestination.create({
-      data: {
-        slug: 'maldives-beach',
-        title: 'Maldives',
-        country: 'Maldives',
-        city: 'Malé Atoll',
-        locationLabel: 'Malé Atoll, Maldives',
-        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'Paradise found: crystal waters, overwater villas, and pristine white-sand beaches.',
-        description: 'The Maldives is a tropical paradise known for its crystal-clear waters, white-sand beaches, and luxurious overwater villas. This island nation in the Indian Ocean offers world-class diving, snorkeling, and water sports. Relax on pristine beaches, explore vibrant coral reefs, and enjoy unparalleled luxury in one of the most beautiful destinations on Earth.',
-        duration: '5-8 Days',
-        price: '$2,500 - $6,000',
-        rating: 4.9,
-      },
-    }),
-    prisma.tourDestination.create({
-      data: {
-        slug: 'swiss-alps',
-        title: 'Swiss Alps',
-        country: 'Switzerland',
-        city: 'Interlaken',
-        locationLabel: 'Interlaken, Bernese Oberland, Switzerland',
-        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'Majestic mountains, pristine lakes, and world-class skiing in the heart of Europe.',
-        description: 'The Swiss Alps offer some of the most breathtaking mountain scenery in the world. From the iconic Matterhorn to the Jungfrau region, this is a paradise for outdoor enthusiasts. Enjoy skiing, hiking, paragliding, and scenic train rides through stunning alpine landscapes. Visit charming mountain villages and experience Swiss hospitality at its finest.',
-        duration: '6-10 Days',
-        price: '$2,000 - $5,000',
-        rating: 4.8,
-      },
-    }),
-    prisma.tourDestination.create({
-      data: {
-        slug: 'machu-picchu-peru',
-        title: 'Machu Picchu',
-        country: 'Peru',
-        city: 'Cusco',
-        locationLabel: 'Cusco Region, Peru',
-        image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80',
-        shortDescription: 'Explore the ancient Incan citadel nestled high in the Andes Mountains.',
-        description: 'Machu Picchu is a 15th-century Incan citadel situated on a mountain ridge in the Eastern Cordillera of southern Peru. It is the most familiar icon of Inca civilization and one of the most famous archaeological sites in the world. Hike the Inca Trail, explore the Sun Gate, and marvel at the engineering genius of the ancient Incas.',
-        duration: '4-6 Days',
-        price: '$1,500 - $3,500',
-        rating: 4.9,
-      },
-    }),
-  ]);
+  // Create destinations sequentially to guarantee correct ID order
+  const destData = [
+    { slug: 'srinagar-kashmir', title: 'Srinagar', country: 'India', city: 'Srinagar', locationLabel: 'Srinagar, Jammu and Kashmir, India', image: 'https://images.unsplash.com/photo-1597432538815-1c262b1cf777?auto=format&fit=crop&w=800&q=80', shortDescription: 'Experience the breathtaking Dal Lake, Mughal Gardens, and Shikara rides in the summer capital of Kashmir.', description: 'Srinagar, the summer capital of Jammu and Kashmir, is a paradise on earth. Famous for its iconic Dal Lake with vibrant houseboats and shikaras, the city also boasts stunning Mughal Gardens like Shalimar Bagh and Nishat Bagh. Explore the floating markets, visit the historic Jamia Masjid, and savor authentic Kashmiri Wazwan cuisine. The charming old city with its intricately carved wooden architecture tells stories of a rich cultural heritage.', duration: '3-5 Days', price: '₹6,000 - ₹20,000', rating: 4.8 },
+    { slug: 'gulmarg-kashmir', title: 'Gulmarg', country: 'India', city: 'Gulmarg', locationLabel: 'Gulmarg, Baramulla, Jammu and Kashmir, India', image: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?auto=format&fit=crop&w=800&q=80', shortDescription: 'Asia\'s highest gondola ride, world-class skiing, and breathtaking alpine meadows await you in Gulmarg.', description: 'Known as the \"Meadow of Flowers,\" Gulmarg is one of India\'s premier hill stations and ski destinations. Home to the highest gondola ride in Asia (Gulmarg Gondola), it offers spectacular views of the snow-capped Himalayas. In winter, the powdery slopes attract skiers from around the globe. In summer, the lush green meadows dotted with wildflowers create a magical landscape. Don\'t miss the famous Gulmarg Golf Course, one of the highest in the world.', duration: '3-5 Days', price: '₹8,000 - ₹30,000', rating: 4.9 },
+    { slug: 'pahalgam-kashmir', title: 'Pahalgam', country: 'India', city: 'Pahalgam', locationLabel: 'Pahalgam, Anantnag, Jammu and Kashmir, India', image: 'https://images.unsplash.com/photo-1597432538361-a9b450880e3c?auto=format&fit=crop&w=800&q=80', shortDescription: 'The Valley of Shepherds — discover Betaab Valley, Aru Valley, and pristine riverside treks.', description: 'Pahalgam, known as the \"Valley of Shepherds,\" is a serene paradise at the confluence of the Lidder River and Sheshnag Lake. It serves as the base camp for the famous Amarnath Yatra. Explore Betaab Valley (made famous by Bollywood films), the tranquil Aru Valley, and the scenic Chandanwari. Adventure seekers can enjoy river rafting in the Lidder River, horse rides through pine forests, and trekking to alpine lakes like Tarsar and Marsar.', duration: '3-5 Days', price: '₹5,000 - ₹18,000', rating: 4.7 },
+    { slug: 'sonamarg-kashmir', title: 'Sonamarg', country: 'India', city: 'Sonamarg', locationLabel: 'Sonamarg, Ganderbal, Jammu and Kashmir, India', image: 'https://images.unsplash.com/photo-1586339949916-3e5457d58f1c?auto=format&fit=crop&w=800&q=80', shortDescription: 'The Golden Meadow — gateway to Thajiwas Glacier, alpine lakes, and majestic Himalayan treks.', description: 'Sonamarg, meaning \"Meadow of Gold,\" is a breathtaking Himalayan resort at an altitude of 2,800 meters. It is the gateway to the famous Thajiwas Glacier, where visitors can enjoy snow sledding even in summer. The region offers spectacular trekking routes to Vishansar Lake, Kishansar Lake, and the remote Gangbal Lake. The drive through Zoji La Pass provides some of the most dramatic mountain scenery in the Himalayas. Sonamarg is also the starting point for treks to Ladakh.', duration: '2-4 Days', price: '₹6,000 - ₹22,000', rating: 4.7 },
+    { slug: 'leh-ladakh', title: 'Leh-Ladakh', country: 'India', city: 'Leh', locationLabel: 'Leh, Ladakh, India', image: 'https://images.unsplash.com/photo-1597131686427-35eefb6f7e7f?auto=format&fit=crop&w=800&q=80', shortDescription: 'Discover the land of high passes — Pangong Tso, Khardung La, and ancient Buddhist monasteries.', description: 'Leh-Ladakh is a high-altitude desert region known for its dramatic landscapes, crystal-clear lakes, and ancient Buddhist monasteries. Drive through the world-famous Khardung La Pass, witness the ever-changing colors of Pangong Tso Lake (made famous by \"3 Idiots\"), and explore the stunning Nubra Valley with its double-humped camels. Visit the 1,000-year-old Thiksey and Hemis monasteries, ride the highest motorable passes, and experience the unique Ladakhi culture and cuisine.', duration: '6-10 Days', price: '₹15,000 - ₹45,000', rating: 4.9 },
+    { slug: 'nubra-valley-ladakh', title: 'Nubra Valley', country: 'India', city: 'Nubra', locationLabel: 'Nubra Valley, Ladakh, India', image: 'https://images.unsplash.com/photo-1586104913497-33f91cafa70b?auto=format&fit=crop&w=800&q=80', shortDescription: 'A stunning valley with sand dunes, Bactrian camels, and the confluence of Shyok and Nubra rivers.', description: 'Nubra Valley, also known as the \"Valley of Flowers of Ladakh,\" is a magical desert valley at an altitude of 3,048 meters. Accessible via the famous Khardung La Pass, it offers a unique landscape where sand dunes meet snow-capped mountains. Ride the rare double-humped Bactrian camels at Hunder, visit the serene Diskit Monastery with its giant Maitreya Buddha statue, and witness the breathtaking confluence of the Shyok and Nubra rivers. The hot springs at Panamik and the picturesque village of Turtuk near the Pakistan border complete this unforgettable journey.', duration: '3-5 Days', price: '₹10,000 - ₹35,000', rating: 4.8 },
+  ];
+
+  const destinations: any[] = [];
+  for (const d of destData) {
+    const created = await prisma.tourDestination.create({ data: d });
+    destinations.push(created);
+  }
   console.log(`✅ Created ${destinations.length} destinations`);
 
-  // Create tour guides for each destination
+  // Create tour guides for each Kashmir & Ladakh destination (use actual destination IDs)
   const guideData = [
     {
-      destinationId: 1,
-      name: 'Elena Papadopoulos',
-      photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
-      description: 'Born and raised on Santorini, Elena knows every hidden gem on the island. With a degree in archaeology and years of guiding experience, she brings the rich history of the island to life. Her sunset tour is legendary among travelers.',
-      rating: 5,
-      location: 'Santorini, Greece',
-      experienceYears: 8,
-      languages: 'Greek, English, French',
-      hireCost: 85.00,
-      phone: '+30 690 123 4567',
-      email: 'elena@santorini-guide.com',
-    },
-    {
-      destinationId: 1,
-      name: 'Nikos Karamalis',
+      destinationId: destinations[0].id, // Srinagar
+      name: 'Mohammad Yousuf',
       photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-      description: 'Nikos is a certified sommelier and local food expert. His tours combine Santorini\'s famous wine culture with stunning coastal views. He knows the best family-owned tavernas and hidden beaches.',
-      rating: 4,
-      location: 'Santorini, Greece',
-      experienceYears: 6,
-      languages: 'Greek, English, Italian',
-      hireCost: 75.00,
-      phone: '+30 690 234 5678',
-    },
-    {
-      destinationId: 2,
-      name: 'Yuki Tanaka',
-      photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80',
-      description: 'Yuki is a Kyoto native and certified tea ceremony instructor. She offers intimate cultural experiences that go beyond typical tourist paths. Her knowledge of Kyoto\'s temples and traditions is unparalleled.',
+      description: 'A Srinagar native with 10+ years of experience, Yousuf knows every hidden corner of the old city. His Shikara tours on Dal Lake are famous among travelers, and he can arrange authentic Wazwan dining experiences in historic homes.',
       rating: 5,
-      location: 'Kyoto, Japan',
+      location: 'Srinagar, Jammu and Kashmir',
       experienceYears: 10,
-      languages: 'Japanese, English, Mandarin',
-      hireCost: 95.00,
-      email: 'yuki@kyoto-guide.jp',
+      languages: 'Urdu, Hindi, English, Kashmiri',
+      hireCost: 1500.00,
+      phone: '+91 9103815702',
+      email: 'yousuf.srinagar@example.com',
     },
     {
-      destinationId: 2,
-      name: 'Kenji Watanabe',
+      destinationId: destinations[0].id, // Srinagar
+      name: 'Riyaz Ahmed',
       photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
-      description: 'Kenji is a former Buddhist monk turned tour guide. He offers unique insight into Japanese spirituality and philosophy. His bamboo forest meditation sessions are truly transformative.',
-      rating: 5,
-      location: 'Kyoto, Japan',
+      description: 'Riyaz is a gardening expert who worked at the Mughal Gardens for over 7 years. His historical walking tours of Nishat Bagh, Shalimar Bagh, and Pari Mahal offer deep insights into Mughal architecture and Kashmiri history.',
+      rating: 4,
+      location: 'Srinagar, Jammu and Kashmir',
       experienceYears: 7,
-      languages: 'Japanese, English',
-      hireCost: 80.00,
-      phone: '+81 75 123 4567',
+      languages: 'Kashmiri, Urdu, Hindi, English',
+      hireCost: 1200.00,
+      phone: '+91 9901234567',
     },
     {
-      destinationId: 3,
-      name: 'Marie Dubois',
-      photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      description: 'Marie is an art historian with a passion for Parisian culture. Her walking tours cover the hidden passages of Paris, street art, and the best croissants in town. She makes every visitor feel like a local.',
-      rating: 4,
-      location: 'Paris, France',
-      experienceYears: 9,
-      languages: 'French, English, Spanish',
-      hireCost: 90.00,
-      phone: '+33 6 12 34 56 78',
-      email: 'marie@paris-guide.fr',
-    },
-    {
-      destinationId: 3,
-      name: 'Pierre Laurent',
-      photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
-      description: 'Pierre is a culinary expert and former chef. His food tours take travelers through Parisian markets, bakeries, and hidden bistros. He also offers cooking classes featuring classic French dishes.',
-      rating: 5,
-      location: 'Paris, France',
-      experienceYears: 12,
-      languages: 'French, English, German',
-      hireCost: 110.00,
-      phone: '+33 6 98 76 54 32',
-    },
-    {
-      destinationId: 4,
-      name: 'Aisha Mohamed',
-      photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
-      description: 'Aisha grew up in the Maldives and knows every coral reef and sandbank. She is a PADI-certified dive master and marine biologist. Her snorkeling tours reveal the incredible underwater world of the Indian Ocean.',
-      rating: 5,
-      location: 'Malé Atoll, Maldives',
-      experienceYears: 6,
-      languages: 'Dhivehi, English, Arabic',
-      hireCost: 120.00,
-      email: 'aisha@maldives-dive.com',
-    },
-    {
-      destinationId: 5,
-      name: 'Hans Mueller',
+      destinationId: destinations[1].id, // Gulmarg
+      name: 'Bilal Ahmad',
       photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
-      description: 'Hans is a certified mountain guide with over 15 years of experience in the Swiss Alps. He leads hiking, climbing, and skiing expeditions. His knowledge of alpine safety and local trails is unmatched.',
+      description: 'Bilal is a certified ski instructor and mountain guide from Gulmarg. He grew up skiing on these slopes and has trained with international instructors. His winter tours include ski lessons, gondola rides, and bonfire experiences in snow-covered meadows.',
       rating: 5,
-      location: 'Interlaken, Switzerland',
-      experienceYears: 15,
-      languages: 'German, French, English, Italian',
-      hireCost: 150.00,
-      phone: '+41 79 123 45 67',
+      location: 'Gulmarg, Baramulla, Jammu and Kashmir',
+      experienceYears: 12,
+      languages: 'Kashmiri, Hindi, English, Urdu',
+      hireCost: 2500.00,
+      email: 'bilal.gulmarg@example.com',
     },
     {
-      destinationId: 5,
-      name: 'Sophie Weber',
-      photo: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=400&q=80',
-      description: 'Sophie is a photographer and nature enthusiast. Her tours focus on capturing the stunning Alpine scenery. She knows the best viewpoints for sunrise photography and hidden valleys untouched by mass tourism.',
-      rating: 4,
-      location: 'Interlaken, Switzerland',
-      experienceYears: 5,
-      languages: 'German, English, French',
-      hireCost: 100.00,
-      phone: '+41 79 234 56 78',
-    },
-    {
-      destinationId: 6,
-      name: 'Carlos Huaman',
+      destinationId: destinations[1].id, // Gulmarg
+      name: 'Farooq Sheikh',
       photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
-      description: 'Carlos is a Quechua-speaking guide from Cusco with deep knowledge of Incan history and traditions. He has led hundreds of Inca Trail treks and shares the spiritual significance of Machu Picchu.',
+      description: 'Farooq is a nature photographer and wildlife enthusiast. He leads summer treks through Gulmarg\'s alpine meadows, identifying rare Himalayan flora and birds. His photography tours capture stunning landscapes and local life.',
+      rating: 4,
+      location: 'Gulmarg, Baramulla, Jammu and Kashmir',
+      experienceYears: 6,
+      languages: 'Kashmiri, Hindi, English',
+      hireCost: 1800.00,
+      phone: '+91 9902345678',
+    },
+    {
+      destinationId: destinations[2].id, // Pahalgam
+      name: 'Aisha Bano',
+      photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      description: 'Aisha is a Pahalgam local with an intimate knowledge of the valley\'s trekking routes. She has guided hundreds of visitors through Betaab Valley, Aru Valley, and the challenging Tarsar Lake trek. Her stories about local folklore make every hike memorable.',
       rating: 5,
-      location: 'Cusco, Peru',
+      location: 'Pahalgam, Anantnag, Jammu and Kashmir',
+      experienceYears: 8,
+      languages: 'Kashmiri, Hindi, English, Urdu',
+      hireCost: 1400.00,
+      phone: '+91 9903456789',
+      email: 'aisha.pahalgam@example.com',
+    },
+    {
+      destinationId: destinations[2].id, // Pahalgam
+      name: 'Shabir Malik',
+      photo: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=400&q=80',
+      description: 'Shabir is an adventure sports expert specializing in river rafting on the Lidder River. He also organizes camping expeditions in Aru Valley with traditional Kashmiri cuisine cooked over open fires. His safety standards are unmatched.',
+      rating: 5,
+      location: 'Pahalgam, Anantnag, Jammu and Kashmir',
+      experienceYears: 9,
+      languages: 'Kashmiri, Hindi, English',
+      hireCost: 1600.00,
+      phone: '+91 9904567890',
+    },
+    {
+      destinationId: destinations[3].id, // Sonamarg
+      name: 'Ghulam Nabi',
+      photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+      description: 'Ghulam has been guiding treks in Sonamarg for over a decade. He knows the Thajiwas Glacier like the back of his hand and arranges memorable pony rides and snow experiences. His knowledge of the Zoji La Pass routes is invaluable for travelers heading to Ladakh.',
+      rating: 4,
+      location: 'Sonamarg, Ganderbal, Jammu and Kashmir',
       experienceYears: 11,
-      languages: 'Spanish, Quechua, English',
-      hireCost: 70.00,
-      phone: '+51 984 123 456',
-      email: 'carlos@cusco-guide.pe',
+      languages: 'Kashmiri, Hindi, Urdu, English',
+      hireCost: 1700.00,
+      email: 'ghulam.sonamarg@example.com',
+    },
+    {
+      destinationId: destinations[4].id, // Leh-Ladakh
+      name: 'Tashi Namgyal',
+      photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
+      description: 'Tashi is a Ladakhi guide born in Leh with extensive knowledge of the region\'s Buddhist culture and high-altitude passes. He has led countless expeditions to Pangong Tso, Khardung La, and the Nubra Valley. He speaks fluent English and can explain the nuances of Tibetan Buddhism.',
+      rating: 5,
+      location: 'Leh, Ladakh, India',
+      experienceYears: 14,
+      languages: 'Ladakhi, Hindi, English, Tibetan',
+      hireCost: 3000.00,
+      phone: '+91 9419176543',
+      email: 'tashi.leh@example.com',
+    },
+    {
+      destinationId: destinations[4].id, // Leh-Ladakh
+      name: 'Sonam Wangchuk',
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+      description: 'Sonam is a passionate environmentalist and cultural guide. He offers eco-conscious tours focusing on Ladakh\'s fragile ecosystem and sustainable tourism. His monastery tours provide deep spiritual insights, and he knows the best sunrise spots over the Indus Valley.',
+      rating: 5,
+      location: 'Leh, Ladakh, India',
+      experienceYears: 8,
+      languages: 'Ladakhi, Hindi, English',
+      hireCost: 2500.00,
+      phone: '+91 9419276543',
+    },
+    {
+      destinationId: destinations[5].id, // Nubra Valley
+      name: 'Stanzin Dorjey',
+      photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+      description: 'Stanzin grew up in the Nubra Valley and knows every sand dune and monastery. He arranges unforgettable Bactrian camel rides at Hunder, visits to the Diskit Monastery, and camping under the stars. His warm Ladakhi hospitality makes every traveler feel welcome.',
+      rating: 4,
+      location: 'Nubra Valley, Ladakh, India',
+      experienceYears: 6,
+      languages: 'Ladakhi, Hindi, English, Urdu',
+      hireCost: 2200.00,
+      phone: '+91 9905678901',
+      email: 'stanzin.nubra@example.com',
     },
   ];
 
-  const guides = await Promise.all(
-    guideData.map((data) =>
-      prisma.tourGuide.create({ data })
-    )
-  );
+  const guides: any[] = [];
+  for (const data of guideData) {
+    const created = await prisma.tourGuide.create({ data });
+    guides.push(created);
+  }
   console.log(`✅ Created ${guides.length} tour guides`);
 
   console.log('\n🎉 Seeding complete!');
