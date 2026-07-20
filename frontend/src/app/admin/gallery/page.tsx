@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import ApiClient from '@/lib/api-client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +23,7 @@ export default function AdminGalleryPage() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Partial<any> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [view, setView] = useState<'grid' | 'table'>('grid');
   const [albums, setAlbums] = useState<any[]>([]);
 
@@ -63,8 +66,30 @@ export default function AdminGalleryPage() {
     } catch { alert('Failed to delete'); }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!editing) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const api = new ApiClient();
+      const endpoint = editing?.type === 'video' ? 'video' : 'image';
+      const res = await api.http.post(`/api/upload/${endpoint}`, formData);
+      if (res.data?.status === 'success' && res.data?.url) {
+        setEditing(prev => ({ ...prev!, url: res.data.url }));
+      } else {
+        alert('Upload failed');
+      }
+    } catch (err: any) {
+      alert('Upload error: ' + (err?.response?.data?.message || err.message));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!editing) return;
+    if (!editing.url?.trim()) { alert('Image/Video URL is required'); return; }
     setSaving(true);
     try {
       const api = new ApiClient();
@@ -100,7 +125,11 @@ export default function AdminGalleryPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
             {items.map(item => (
               <motion.div key={item.id} style={{ borderRadius: 16, overflow: 'hidden', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }} whileHover={{ y: -4, scale: 1.02 }}>
-                <img src={item.url || item.src} alt={item.title || item.alt} style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                {item.type === 'video' ? (
+                  <div style={{ width: '100%', height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>🎬</div>
+                ) : (
+                  <img src={item.url || item.src} alt={item.title || item.alt} style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                )}
                 <div style={{ padding: 12 }}>
                   <strong style={{ color: '#f8fcff', fontSize: '0.9rem' }}>{item.title || item.alt}</strong>
                   <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
@@ -131,7 +160,7 @@ export default function AdminGalleryPage() {
               <tbody>
                 {items.map(item => (
                   <tr key={item.id}>
-                    <td><img src={item.url || item.src} alt="" style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /></td>
+                    <td>{item.type === 'video' ? <span>🎬</span> : <img src={item.url || item.src} alt="" style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}</td>
                     <td>{item.title || item.alt}</td>
                     <td><span className="admin-pill">{item.type || 'photo'}</span></td>
                     <td>{item.album?.title || item.album || '—'}</td>
@@ -154,9 +183,36 @@ export default function AdminGalleryPage() {
             <motion.div className="admin-modal" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <h3 style={{ marginBottom: 18, color: '#f8fcff' }}>{editing?.id ? 'Edit Item' : 'Add Gallery Item'}</h3>
               <div className="admin-form">
-                <div className="admin-form-group full-width"><label>Image/Video URL</label><input value={editing?.url || ''} onChange={e => setEditing(prev => ({ ...prev!, url: e.target.value }))} /></div>
+                <div className="admin-form-group full-width">
+                  <label>Image / Video</label>
+                  <div className="admin-file-input-wrap">
+                    <input type="file" accept={editing?.type === 'video' ? 'video/*' : 'image/*'} id="gallery-file-upload" style={{ display: 'none' }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); e.target.value = ''; }} />
+                    <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => document.getElementById('gallery-file-upload')?.click()} disabled={uploading}>
+                      {uploading ? '⏳ Uploading...' : '📁 Choose File'}
+                    </button>
+                    {editing?.url && <span className="admin-upload-status">✅ Uploaded</span>}
+                  </div>
+                  {editing?.url && editing?.type !== 'video' && (
+                    <div className="admin-upload-preview">
+                      <img src={editing.url.startsWith('http') ? editing.url : `http://localhost:8080${editing.url}`} alt="preview" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <button className="admin-array-remove" onClick={() => setEditing(prev => ({ ...prev!, url: '' }))}>✕ Remove</button>
+                    </div>
+                  )}
+                  {editing?.url && editing?.type === 'video' && (
+                    <div className="admin-upload-preview">
+                      <span className="admin-video-filename">🎬 {editing.url.split('/').pop()}</span>
+                      <button className="admin-array-remove" onClick={() => setEditing(prev => ({ ...prev!, url: '' }))}>✕ Remove</button>
+                    </div>
+                  )}
+                </div>
                 <div className="admin-form-group"><label>Title</label><input value={editing?.title || ''} onChange={e => setEditing(prev => ({ ...prev!, title: e.target.value }))} /></div>
-                <div className="admin-form-group"><label>Type</label><select value={editing?.type || 'photo'} onChange={e => setEditing(prev => ({ ...prev!, type: e.target.value }))}><option value="photo">Photo</option><option value="video">Video</option></select></div>
+                <div className="admin-form-group"><label>Type</label>
+                  <select value={editing?.type || 'photo'} onChange={e => setEditing(prev => ({ ...prev!, type: e.target.value }))}>
+                    <option value="photo">Photo</option>
+                    <option value="video">Video</option>
+                  </select>
+                </div>
                 <div className="admin-form-group"><label>Album</label><select value={editing?.album_id || ''} onChange={e => setEditing(prev => ({ ...prev!, album_id: e.target.value ? Number(e.target.value) : undefined }))}><option value="">No album</option>{albums.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}</select></div>
                 <div className="admin-form-actions">
                   <button className="admin-btn admin-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
@@ -170,6 +226,16 @@ export default function AdminGalleryPage() {
       <style jsx>{`
         .admin-modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .admin-modal { background: #0d2039; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px; width: min(600px, 100%); max-height: 90vh; overflow-y: auto; }
+        .admin-file-input-wrap { display: flex; align-items: center; gap: 10px; }
+        .admin-upload-status { font-size: 0.8rem; color: #20c997; font-weight: 600; }
+        .admin-upload-preview { margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+        .admin-upload-preview img { width: 100px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .admin-array-remove { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+        .admin-array-remove:hover { background: rgba(255,107,107,0.15); }
+        .admin-btn-sm { padding: 6px 14px !important; font-size: 0.85rem !important; }
+        .admin-video-filename { font-size: 0.85rem; color: #c8d8e4; background: rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 8px; }
+        select { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #f8fcff; font-family: inherit; font-size: 0.95rem; }
+        select option { background: #0d2039; color: #f8fcff; }
       `}</style>
     </div>
   );

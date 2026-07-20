@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import ApiClient from '@/lib/api-client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,6 +25,7 @@ export default function AdminBlogPage() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Partial<BlogPost> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -59,8 +62,29 @@ export default function AdminBlogPage() {
     } catch { alert('Failed to toggle publish'); }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!editing) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const api = new ApiClient();
+      const res = await api.http.post('/api/upload/image', formData);
+      if (res.data?.status === 'success' && res.data?.url) {
+        setEditing(prev => ({ ...prev!, coverImage: res.data.url }));
+      } else {
+        alert('Upload failed');
+      }
+    } catch (err: any) {
+      alert('Upload error: ' + (err?.response?.data?.message || err.message));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!editing) return;
+    if (!editing.title?.trim()) { alert('Title is required'); return; }
     setSaving(true);
     try {
       const api = new ApiClient();
@@ -96,6 +120,7 @@ export default function AdminBlogPage() {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th>Cover</th>
                   <th>Title</th>
                   <th>Author</th>
                   <th>Date</th>
@@ -106,6 +131,7 @@ export default function AdminBlogPage() {
               <tbody>
                 {items.map(item => (
                   <tr key={item.id}>
+                    <td>{item.coverImage ? <img src={item.coverImage.startsWith('http') ? item.coverImage : `http://localhost:8080${item.coverImage}`} alt="" style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : <span style={{ opacity: 0.4 }}>—</span>}</td>
                     <td><strong>{item.title}</strong></td>
                     <td>{item.author || '—'}</td>
                     <td>{new Date(item.createdAt).toLocaleDateString()}</td>
@@ -136,7 +162,23 @@ export default function AdminBlogPage() {
                 <div className="admin-form-group"><label>Author</label><input value={editing?.author || ''} onChange={e => setEditing(prev => ({ ...prev!, author: e.target.value }))} /></div>
                 <div className="admin-form-group full-width"><label>Excerpt</label><textarea value={editing?.excerpt || ''} onChange={e => setEditing(prev => ({ ...prev!, excerpt: e.target.value }))} rows={2} /></div>
                 <div className="admin-form-group full-width"><label>Content (HTML supported)</label><textarea value={editing?.content || ''} onChange={e => setEditing(prev => ({ ...prev!, content: e.target.value }))} rows={6} /></div>
-                <div className="admin-form-group"><label>Cover Image URL</label><input value={editing?.coverImage || ''} onChange={e => setEditing(prev => ({ ...prev!, coverImage: e.target.value }))} /></div>
+                <div className="admin-form-group">
+                  <label>Cover Image</label>
+                  <div className="admin-file-input-wrap">
+                    <input type="file" accept="image/*" id="blog-image-upload" style={{ display: 'none' }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); e.target.value = ''; }} />
+                    <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => document.getElementById('blog-image-upload')?.click()} disabled={uploading}>
+                      {uploading ? '⏳ Uploading...' : '📁 Choose Cover Image'}
+                    </button>
+                    {editing?.coverImage && <span className="admin-upload-status">✅ Uploaded</span>}
+                  </div>
+                  {editing?.coverImage && (
+                    <div className="admin-upload-preview">
+                      <img src={editing.coverImage.startsWith('http') ? editing.coverImage : `http://localhost:8080${editing.coverImage}`} alt="preview" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <button className="admin-array-remove" onClick={() => setEditing(prev => ({ ...prev!, coverImage: '' }))}>✕ Remove</button>
+                    </div>
+                  )}
+                </div>
                 <div className="admin-form-actions">
                   <button className="admin-btn admin-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                   <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
@@ -149,6 +191,13 @@ export default function AdminBlogPage() {
       <style jsx>{`
         .admin-modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .admin-modal { background: #0d2039; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px; width: min(600px, 100%); max-height: 90vh; overflow-y: auto; }
+        .admin-file-input-wrap { display: flex; align-items: center; gap: 10px; }
+        .admin-upload-status { font-size: 0.8rem; color: #20c997; font-weight: 600; }
+        .admin-upload-preview { margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+        .admin-upload-preview img { width: 100px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .admin-array-remove { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+        .admin-array-remove:hover { background: rgba(255,107,107,0.15); }
+        .admin-btn-sm { padding: 6px 14px !important; font-size: 0.85rem !important; }
       `}</style>
     </div>
   );
