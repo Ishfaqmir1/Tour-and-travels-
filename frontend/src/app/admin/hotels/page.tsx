@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import ApiClient from '@/lib/api-client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +13,7 @@ interface Hotel {
   location: string;
   starRating: number;
   pricePerNight: number;
+  image: string;
   isActive: boolean;
 }
 
@@ -21,6 +24,7 @@ export default function AdminHotelsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Partial<Hotel> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -37,7 +41,7 @@ export default function AdminHotelsPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const openCreate = () => { setEditing({ name: '', slug: '', location: '', starRating: 3, pricePerNight: 0, isActive: true }); setShowModal(true); };
+  const openCreate = () => { setEditing({ name: '', slug: '', location: '', starRating: 3, pricePerNight: 0, image: '', isActive: true }); setShowModal(true); };
   const openEdit = (item: Hotel) => { setEditing({ ...item }); setShowModal(true); };
 
   const handleDelete = async (id: number) => {
@@ -49,8 +53,25 @@ export default function AdminHotelsPage() {
     } catch { alert('Failed to delete'); }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!editing) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const api = new ApiClient();
+      const res = await api.http.post('/api/upload/image', formData);
+      if (res.data?.status === 'success' && res.data?.url) {
+        setEditing(prev => ({ ...prev!, image: res.data.url }));
+      } else { alert('Upload failed'); }
+    } catch (err: any) {
+      alert('Upload error: ' + (err?.response?.data?.message || err.message));
+    } finally { setUploading(false); }
+  };
+
   const handleSave = async () => {
     if (!editing) return;
+    if (!editing.name?.trim()) { alert('Name is required'); return; }
     setSaving(true);
     try {
       const api = new ApiClient();
@@ -86,6 +107,7 @@ export default function AdminHotelsPage() {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th>Image</th>
                   <th>Name</th>
                   <th>Location</th>
                   <th>Stars</th>
@@ -97,10 +119,11 @@ export default function AdminHotelsPage() {
               <tbody>
                 {items.map(item => (
                   <tr key={item.id}>
+                    <td>{item.image ? <img src={item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image}`} alt="" style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : <span style={{ opacity: 0.4 }}>—</span>}</td>
                     <td><strong>{item.name}</strong></td>
                     <td>{item.location}</td>
                     <td>{'⭐'.repeat(item.starRating)}</td>
-                    <td>${item.pricePerNight}</td>
+                    <td>₹{item.pricePerNight}</td>
                     <td><span className={`admin-pill ${item.isActive ? '' : 'cancelled'}`}>{item.isActive ? 'Active' : 'Inactive'}</span></td>
                     <td>
                       <button className="admin-btn admin-btn-secondary" style={{ padding: '6px 12px', marginRight: 6 }} onClick={() => openEdit(item)}>Edit</button>
@@ -123,8 +146,25 @@ export default function AdminHotelsPage() {
                 <div className="admin-form-group"><label>Name</label><input value={editing?.name || ''} onChange={e => setEditing(prev => ({ ...prev!, name: e.target.value }))} /></div>
                 <div className="admin-form-group"><label>Slug</label><input value={editing?.slug || ''} onChange={e => setEditing(prev => ({ ...prev!, slug: e.target.value }))} /></div>
                 <div className="admin-form-group"><label>Location</label><input value={editing?.location || ''} onChange={e => setEditing(prev => ({ ...prev!, location: e.target.value }))} /></div>
+                <div className="admin-form-group">
+                  <label>Image</label>
+                  <div className="admin-file-input-wrap">
+                    <input type="file" accept="image/*" id="hotel-image-upload" style={{ display: 'none' }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); e.target.value = ''; }} />
+                    <button className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => document.getElementById('hotel-image-upload')?.click()} disabled={uploading}>
+                      {uploading ? '⏳ Uploading...' : '📁 Choose Image'}
+                    </button>
+                    {editing?.image && <span className="admin-upload-status">✅ Uploaded</span>}
+                  </div>
+                  {editing?.image && (
+                    <div className="admin-upload-preview">
+                      <img src={editing.image.startsWith('http') ? editing.image : `http://localhost:8080${editing.image}`} alt="preview" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <button className="admin-array-remove" onClick={() => setEditing(prev => ({ ...prev!, image: '' }))}>✕ Remove</button>
+                    </div>
+                  )}
+                </div>
                 <div className="admin-form-group"><label>Star Rating</label><select value={editing?.starRating || 3} onChange={e => setEditing(prev => ({ ...prev!, starRating: Number(e.target.value) }))}>{[1,2,3,4,5].map(s => <option key={s} value={s}>{'⭐'.repeat(s)}</option>)}</select></div>
-                <div className="admin-form-group"><label>Price/Night ($)</label><input type="number" value={editing?.pricePerNight || 0} onChange={e => setEditing(prev => ({ ...prev!, pricePerNight: Number(e.target.value) }))} /></div>
+                <div className="admin-form-group"><label>Price/Night (₹)</label><input type="number" value={editing?.pricePerNight || 0} onChange={e => setEditing(prev => ({ ...prev!, pricePerNight: Number(e.target.value) }))} /></div>
                 <div className="admin-form-actions">
                   <button className="admin-btn admin-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                   <button className="admin-btn admin-btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
@@ -137,6 +177,13 @@ export default function AdminHotelsPage() {
       <style jsx>{`
         .admin-modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .admin-modal { background: #0d2039; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px; width: min(600px, 100%); max-height: 90vh; overflow-y: auto; }
+        .admin-file-input-wrap { display: flex; align-items: center; gap: 10px; }
+        .admin-upload-status { font-size: 0.8rem; color: #20c997; font-weight: 600; }
+        .admin-upload-preview { margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+        .admin-upload-preview img { width: 100px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .admin-array-remove { background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+        .admin-array-remove:hover { background: rgba(255,107,107,0.15); }
+        .admin-btn-sm { padding: 6px 14px !important; font-size: 0.85rem !important; }
       `}</style>
     </div>
   );
