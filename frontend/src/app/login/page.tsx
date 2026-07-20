@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(isSuperAdmin ? '/admin/dashboard' : '/profile');
+      router.push(isSuperAdmin ? '/admin' : '/profile');
     }
   }, [isAuthenticated, isSuperAdmin, router]);
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
     try {
       const response = await login(data.email.trim(), data.password);
       if (response?.status === 'success' && response?.authorisation?.token) {
-        router.push(response?.user?.is_super_admin ? '/admin/dashboard' : '/profile');
+        router.push(response?.user?.is_super_admin ? '/admin' : '/profile');
         return;
       }
       setError(response?.message || 'Login failed. Please try again.');

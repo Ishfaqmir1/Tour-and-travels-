@@ -13,7 +13,7 @@ export function proxy(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (token && authRoutes.some((route) => pathname.startsWith(route))) {
-    const dest = isAdminCookie ? '/admin/dashboard' : '/profile';
+    const dest = isAdminCookie ? '/admin' : '/profile';
     return NextResponse.redirect(new URL(dest, request.url));
   }
 

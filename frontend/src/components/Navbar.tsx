@@ -67,7 +67,7 @@ export default function Navbar({ theme = 'default' }: NavbarProps) {
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
         >
-          <Link href={isSuperAdmin ? '/admin/dashboard' : '/'}>
+          <Link href={isSuperAdmin ? '/admin' : '/'}>
             <span className="logo-icon">🌍</span>
             <span className="logo-text">
               <span className="logo-travel">Travel</span>
@@ -85,7 +85,7 @@ export default function Navbar({ theme = 'default' }: NavbarProps) {
                 transition={{ duration: 0.4, delay: 0.1 }}
               >
                 <Link
-                  href="/admin/dashboard"
+                  href="/admin"
                   className={`admin-link ${pathname.startsWith('/admin') ? 'active' : ''}`}
                   onClick={() => handleLinkClick('Admin Dashboard')}
                 >
@@ -204,7 +204,7 @@ export default function Navbar({ theme = 'default' }: NavbarProps) {
               {isSuperAdmin ? (
                 <>
                   <motion.li initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-                    <Link href="/admin/dashboard" className="admin-link" onClick={() => handleLinkClick('Admin Dashboard')}>
+                    <Link href="/admin" className="admin-link" onClick={() => handleLinkClick('Admin Dashboard')}>
                       Admin Dashboard
                     </Link>
                   </motion.li>
