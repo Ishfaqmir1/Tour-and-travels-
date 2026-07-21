@@ -216,6 +216,77 @@ export function useChangePassword() {
   });
 }
 
+/** Fetch a package by slug */
+export function usePackage(slug: string) {
+  return useQuery({
+    queryKey: ['packages', slug],
+    queryFn: async () => {
+      const api = await getApi();
+      const response = await api.getPackage(slug);
+      if (response?.status === 'success' && response?.data) {
+        return response.data;
+      }
+      throw new Error(response?.message || 'Package not found');
+    },
+    enabled: !!slug,
+  });
+}
+
+/** Fetch all packages */
+export function usePackages(params?: Record<string, any>) {
+  return useQuery({
+    queryKey: ['packages', params],
+    queryFn: async () => {
+      const api = await getApi();
+      const response = await api.getPackages(params);
+      if (response?.status === 'success' && Array.isArray(response.data)) {
+        return { data: response.data, pagination: response.pagination };
+      }
+      return { data: [], pagination: null };
+    },
+  });
+}
+
+/** Fetch current user's package bookings */
+export function useMyBookings(userId: number) {
+  return useQuery({
+    queryKey: ['profile', 'bookings', userId],
+    queryFn: async () => {
+      const api = await getApi();
+      const response = await api.getMyBookings(userId);
+      if (response?.status === 'success' && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
+    },
+    enabled: !!userId,
+    retry: 1,
+  });
+}
+
+/** Create a package booking */
+export function useCreateBooking() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      package_id: number;
+      user_id: number;
+      customer_name: string;
+      customer_email: string;
+      customer_phone?: string;
+      travelers: number;
+      travel_date: string;
+      special_requests?: string;
+    }) => {
+      const api = await getApi();
+      return api.createBooking(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', 'bookings'] });
+    },
+  });
+}
+
 /** Create a payment */
 export function useCreatePayment() {
   const queryClient = useQueryClient();

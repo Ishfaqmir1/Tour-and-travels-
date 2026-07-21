@@ -422,8 +422,27 @@ class ApiClient {
     return response.data;
   }
 
+  async createBooking(payload: {
+    package_id: number;
+    user_id: number;
+    customer_name: string;
+    customer_email: string;
+    customer_phone?: string;
+    travelers: number;
+    travel_date: string;
+    special_requests?: string;
+  }) {
+    const response = await this.client.post('/api/bookings', payload);
+    return response.data;
+  }
+
   async getBookings(params?: Record<string, any>) {
     const response = await this.client.get('/api/bookings', { params });
+    return response.data;
+  }
+
+  async getMyBookings(userId: number) {
+    const response = await this.client.get('/api/bookings', { params: { user_id: userId } });
     return response.data;
   }
 

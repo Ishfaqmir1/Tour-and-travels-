@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 :root { --primary-dark: #0a1628; --primary-blue: #0f2847; --teal-dark: #134e5e; --teal-light: #1a6b7c; --teal-accent: #20c997; --accent: #ffa726; --accent-dark: #f57c00; --glass-bg: rgba(255,255,255,0.08); --glass-border: rgba(255,255,255,0.15); --glass-shadow: rgba(0,0,0,0.3); --text-white: #ffffff; --text-muted: #a3c4cc; --radius-md: 16px; --radius-xl: 30px; --radius-full: 50px; --transition: all 0.3s ease; --transition-bounce: all 0.4s cubic-bezier(0.4,0,0.2,1); }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-.payment-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue), var(--teal-dark), var(--teal-light)); padding: 20px; }
+.payment-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue), var(--teal-dark), var(--teal-light)); padding: 80px 20px 20px; }
 .payment-card { width: 100%; max-width: 500px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: 40px 35px; box-shadow: 0 8px 32px var(--glass-shadow); transition: var(--transition-bounce); }
 .payment-card h2 { text-align: center; color: var(--text-white); margin-bottom: 10px; }
 .payment-card h2 span { color: var(--accent); }

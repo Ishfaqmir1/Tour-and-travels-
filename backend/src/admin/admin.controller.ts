@@ -2,6 +2,7 @@ import { Controller, Get, Put, Delete, Body, Param, ParseIntPipe, UseGuards } fr
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminGuard } from '../common/guards/admin.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('api/admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -83,7 +84,7 @@ export class AdminController {
   }
 
   @Put('users/:id')
-  async updateUser(@Param('id', ParseIntPipe) id: number, @Body() body: { name?: string; email?: string; phone?: string; isSuperAdmin?: boolean }) {
+  async updateUser(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
     const data: any = {};
     if (body.name !== undefined) data.name = body.name;
     if (body.email !== undefined) data.email = body.email;

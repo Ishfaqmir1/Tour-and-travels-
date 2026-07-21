@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateGalleryAlbumDto, UpdateGalleryAlbumDto, CreateGalleryItemDto, UpdateGalleryItemDto } from './dto/gallery.dto';
 
 @Controller('api/gallery')
 export class GalleryController {
@@ -42,8 +45,9 @@ export class GalleryController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('albums')
-  async createAlbum(@Body() body: any) {
+  async createAlbum(@Body() body: CreateGalleryAlbumDto) {
     const album = await this.prisma.galleryAlbum.create({
       data: {
         title: body.title,
@@ -56,12 +60,13 @@ export class GalleryController {
     return { status: 'success', data: album };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('items')
-  async createItem(@Body() body: any) {
+  async createItem(@Body() body: CreateGalleryItemDto) {
     const item = await this.prisma.galleryItem.create({
       data: {
-        albumId: body.album_id ? parseInt(body.album_id, 10) : null,
-        destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
+        albumId: body.album_id ?? null,
+        destinationId: body.destination_id ?? null,
         type: body.type || 'photo',
         url: body.url,
         thumbnailUrl: body.thumbnail_url,
@@ -73,8 +78,9 @@ export class GalleryController {
     return { status: 'success', data: item };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put('albums/:id')
-  async updateAlbum(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async updateAlbum(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateGalleryAlbumDto) {
     const album = await this.prisma.galleryAlbum.update({
       where: { id },
       data: {
@@ -86,12 +92,13 @@ export class GalleryController {
     return { status: 'success', data: album };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put('items/:id')
-  async updateItem(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async updateItem(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateGalleryItemDto) {
     const item = await this.prisma.galleryItem.update({
       where: { id },
       data: {
-        albumId: body.album_id ? parseInt(body.album_id, 10) : null,
+        albumId: body.album_id ?? null,
         type: body.type, url: body.url, thumbnailUrl: body.thumbnail_url,
         title: body.title, description: body.description,
         sortOrder: body.sort_order, isActive: body.is_active,
@@ -100,12 +107,14 @@ export class GalleryController {
     return { status: 'success', data: item };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('albums/:id')
   async removeAlbum(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.galleryAlbum.delete({ where: { id } });
     return { status: 'success', message: 'Album deleted' };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete('items/:id')
   async removeItem(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.galleryItem.delete({ where: { id } });

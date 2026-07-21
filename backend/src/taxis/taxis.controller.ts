@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateTaxiDto, UpdateTaxiDto } from './dto/create-taxi.dto';
 
 @Controller('api/taxis')
 export class TaxisController {
@@ -50,8 +53,9 @@ export class TaxisController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateTaxiDto) {
     const taxi = await this.prisma.taxi.create({
       data: {
         name: body.name,
@@ -62,7 +66,7 @@ export class TaxisController {
         location: body.location,
         type: body.type || 'car',
         capacity: body.capacity || 4,
-        pricePerKm: body.price_per_km ? parseFloat(body.price_per_km) : null,
+        pricePerKm: body.price_per_km ?? null,
         description: body.description,
         amenities: body.amenities ? JSON.stringify(body.amenities) : null,
       },
@@ -70,8 +74,9 @@ export class TaxisController {
     return { status: 'success', data: taxi };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTaxiDto) {
     const taxi = await this.prisma.taxi.update({
       where: { id },
       data: {
@@ -83,7 +88,7 @@ export class TaxisController {
         location: body.location,
         type: body.type,
         capacity: body.capacity,
-        pricePerKm: body.price_per_km ? parseFloat(body.price_per_km) : null,
+        pricePerKm: body.price_per_km ?? null,
         description: body.description,
         amenities: body.amenities ? JSON.stringify(body.amenities) : null,
         isActive: body.is_active,
@@ -92,6 +97,7 @@ export class TaxisController {
     return { status: 'success', data: taxi };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.taxi.delete({ where: { id } });

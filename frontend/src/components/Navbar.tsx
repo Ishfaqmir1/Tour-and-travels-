@@ -42,6 +42,7 @@ export default function Navbar({ theme = 'default' }: NavbarProps) {
     { name: 'Home', path: '/', className: 'home-link' },
     { name: 'About Us', path: '/about', className: 'about-link' },
     { name: 'Tour Guide', path: '/tourguide', className: 'tour-link' },
+    { name: 'Packages', path: '/packages', className: 'packages-link' },
     { name: 'Contact', path: '/contact', className: 'contact-link' },
   ];
 
@@ -70,8 +71,8 @@ export default function Navbar({ theme = 'default' }: NavbarProps) {
           <Link href={isSuperAdmin ? '/admin' : '/'}>
             <span className="logo-icon">🌍</span>
             <span className="logo-text">
-              <span className="logo-travel">Travel</span>
-              <span className="logo-world">World</span>
+              <span className="logo-voice">Voice Roy</span>
+              <span className="logo-travels"> Tour and Travels</span>
             </span>
           </Link>
         </motion.div>

@@ -51,12 +51,14 @@
   letter-spacing: -0.5px;
 }
 
-.logo-travel {
-  color: #ffffff;
+.logo-voice {
+  color: #ffa726;
+  font-weight: 800;
 }
 
-.logo-world {
-  color: #ffa726;
+.logo-travels {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .navbar-links {

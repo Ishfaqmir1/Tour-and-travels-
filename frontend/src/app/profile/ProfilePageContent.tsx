@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/lib/auth-context';
 import { profileSchema, changePasswordSchema, type ProfileFormData, type ChangePasswordFormData } from '@/lib/schemas';
-import { useMyProfile, useMyPayments, useUpdateProfile, useChangePassword } from '@/lib/hooks';
+import { useMyProfile, useMyPayments, useMyBookings, useUpdateProfile, useChangePassword } from '@/lib/hooks';
 import toast from 'react-hot-toast';
 import '../../styles/profile.css';
 
@@ -21,6 +21,8 @@ export default function ProfilePageContent() {
 
   const { data: profile, isLoading: profileLoading } = useMyProfile();
   const { data: hiredBookings = [], isLoading: bookingsLoading } = useMyPayments();
+  const userId = user?.id || profile?.id || 0;
+  const { data: packageBookings = [], isLoading: pkgBookingsLoading } = useMyBookings(userId);
   const updateProfileMutation = useUpdateProfile();
   const changePasswordMutation = useChangePassword();
 
@@ -194,6 +196,48 @@ export default function ProfilePageContent() {
             </form>
           </motion.div>
 
+          {/* Package Bookings Section */}
+          <motion.div className="profile-card history-card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <div className="card-header">
+              <h2>📋 Package Bookings</h2>
+              <span className="view-all">{packageBookings.length} Booking{packageBookings.length === 1 ? '' : 's'}</span>
+            </div>
+            <div className="card-body">
+              {pkgBookingsLoading ? (
+                <div className="bookings-empty-state">Loading package bookings...</div>
+              ) : packageBookings.length === 0 ? (
+                <div className="bookings-empty-state">
+                  <p>You haven't booked any packages yet.</p>
+                  <Link href="/packages" className="btn-bookings-retry">Browse Packages</Link>
+                </div>
+              ) : (
+                <div className="booking-list">
+                  {packageBookings.map((booking: any, index: number) => (
+                    <motion.div key={booking.id} className="booking-item" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + index * 0.08 }}>
+                      <div className="booking-top-row">
+                        <div className="travel-icon">📅</div>
+                        <div className="travel-details">
+                          <h4>{booking.package?.title || 'Package Booking'}</h4>
+                          <p>{booking.travel_date ? formatDate(booking.travel_date) : 'Date not set'}</p>
+                        </div>
+                        <span className={`travel-status ${booking.status === 'confirmed' ? 'completed' : booking.status === 'cancelled' ? 'cancelled' : 'pending'}`}>
+                          {booking.status || 'pending'}
+                        </span>
+                      </div>
+                      <div className="booking-meta-grid">
+                        <div><span className="booking-label">Booked On</span><p>{formatDate(booking.created_at)}</p></div>
+                        <div><span className="booking-label">Guests</span><p>{booking.travelers || 1}</p></div>
+                        <div><span className="booking-label">Total</span><p>${Number(booking.amount || 0).toFixed(2)}</p></div>
+                        <div><span className="booking-label">Transaction</span><p>{booking.transaction_id}</p></div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Hired Tour Guides Section */}
           <motion.div className="profile-card history-card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
             <div className="card-header">
               <h2>🧳 Hired Tour Guides</h2>

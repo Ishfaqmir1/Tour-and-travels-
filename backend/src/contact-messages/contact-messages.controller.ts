@@ -1,12 +1,15 @@
-import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateContactMessageDto } from './dto/create-message.dto';
 
 @Controller('api/contact-messages')
 export class ContactMessagesController {
   constructor(private prisma: PrismaService) {}
 
   @Post()
-  async create(@Body() body: { name: string; email: string; message: string }) {
+  async create(@Body() body: CreateContactMessageDto) {
     await this.prisma.contactMessage.create({
       data: {
         name: body.name,
@@ -21,6 +24,7 @@ export class ContactMessagesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get()
   async findAll() {
     const messages = await this.prisma.contactMessage.findMany({
@@ -29,6 +33,7 @@ export class ContactMessagesController {
     return { status: 'success', data: messages };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const message = await this.prisma.contactMessage.findUnique({ where: { id } });
@@ -36,6 +41,7 @@ export class ContactMessagesController {
     return { status: 'success', data: message };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.contactMessage.delete({ where: { id } });

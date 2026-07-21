@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateBlogDto, UpdateBlogDto } from './dto/create-blog.dto';
 
 @Controller('api/blog')
 export class BlogController {
@@ -39,8 +42,9 @@ export class BlogController {
     return { status: 'success', data: { ...post, tags: post.tags ? JSON.parse(post.tags) : [] } };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateBlogDto) {
     const post = await this.prisma.blogPost.create({
       data: {
         slug: body.slug || body.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
@@ -59,8 +63,9 @@ export class BlogController {
     return { status: 'success', data: post };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateBlogDto) {
     const data: any = {};
     if (body.title) data.title = body.title;
     if (body.content !== undefined) data.content = body.content;
@@ -79,6 +84,7 @@ export class BlogController {
     return { status: 'success', data: post };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.blogPost.delete({ where: { id } });

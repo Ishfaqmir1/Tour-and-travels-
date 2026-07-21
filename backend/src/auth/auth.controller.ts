@@ -11,21 +11,23 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('api')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  async register(
-    @Body() body: { name: string; email: string; password: string },
-  ) {
+  async register(@Body() body: RegisterDto) {
     return this.authService.register(body.name, body.email, body.password);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: { email: string; password: string }) {
+  async login(@Body() body: LoginDto) {
     return this.authService.login(body.email, body.password);
   }
 
@@ -40,7 +42,6 @@ export class AuthController {
   @Get('me')
   async me(@Request() req: any) {
     const user = await this.authService.getProfile(req.user.id);
-    const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@viceroytravels.com';
     
     return {
       status: 'success',
@@ -49,19 +50,15 @@ export class AuthController {
         profile_photo_url: user.profilePhotoPath
           ? `/storage/${user.profilePhotoPath}`
           : null,
-        is_super_admin: user.email?.toLowerCase() === adminEmail.toLowerCase(),
+        is_super_admin: !!(req.user.isSuperAdmin || req.user.is_super_admin),
       } : null,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('profile')
-  async updateProfile(
-    @Request() req: any,
-    @Body() body: { name: string; email: string; phone?: string; address?: string },
-  ) {
+  async updateProfile(@Request() req: any, @Body() body: UpdateProfileDto) {
     const user = await this.authService.updateProfile(req.user.id, body);
-    const adminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@viceroytravels.com';
 
     return {
       status: 'success',
@@ -71,7 +68,7 @@ export class AuthController {
         profile_photo_url: user.profilePhotoPath
           ? `/storage/${user.profilePhotoPath}`
           : null,
-        is_super_admin: user.email?.toLowerCase() === adminEmail.toLowerCase(),
+        is_super_admin: !!(req.user.isSuperAdmin || req.user.is_super_admin),
       } : null,
     };
   }
@@ -79,10 +76,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
-  async changePassword(
-    @Request() req: any,
-    @Body() body: { current_password: string; new_password: string },
-  ) {
+  async changePassword(@Request() req: any, @Body() body: ChangePasswordDto) {
     return this.authService.changePassword(
       req.user.id,
       body.current_password,

@@ -1,17 +1,30 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards, Request } from '@nestjs/common';
+import { BookingStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateBookingDto } from './dto/create-booking.dto';
 
 @Controller('api/bookings')
 export class BookingsController {
   constructor(private prisma: PrismaService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Query() query: { user_id?: string; status?: string; page?: string; limit?: string }) {
+  async findAll(@Request() req: any, @Query() query: { user_id?: string; status?: string; page?: string; limit?: string }) {
+    const isAdmin = !!(req.user?.isSuperAdmin || req.user?.is_super_admin);
     const page = parseInt(query.page || '1', 10);
     const limit = Math.min(parseInt(query.limit || '20', 10), 50);
     const skip = (page - 1) * limit;
     const where: any = {};
-    if (query.user_id) where.userId = parseInt(query.user_id, 10);
+
+    // Non-admin users can only see their own bookings
+    if (!isAdmin) {
+      where.userId = req.user.id;
+    } else if (query.user_id) {
+      where.userId = parseInt(query.user_id, 10);
+    }
+
     if (query.status) where.status = query.status;
 
     const [bookings, total] = await Promise.all([
@@ -39,8 +52,9 @@ export class BookingsController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Request() req: any, @Param('id', ParseIntPipe) id: number) {
     const booking = await this.prisma.booking.findUnique({
       where: { id },
       include: {
@@ -49,20 +63,42 @@ export class BookingsController {
       },
     });
     if (!booking) return { status: 'error', message: 'Booking not found' };
+
+    // Non-admin users can only view their own bookings
+    const isAdmin = !!(req.user?.isSuperAdmin || req.user?.is_super_admin);
+    if (!isAdmin && booking.userId !== req.user.id) {
+      return { status: 'error', message: 'Booking not found' };
+    }
+
     return { status: 'success', data: booking };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Request() req: any, @Body() body: CreateBookingDto) {
+    // Use authenticated user's ID; prevent impersonation
+    const userId = req.user.id;
+
+    // Validate the package exists and get its price
+    const pkg = await this.prisma.package.findUnique({ where: { id: body.package_id } });
+    if (!pkg) {
+      return { status: 'error', message: 'Package not found' };
+    }
+
+    // Calculate expected amount from package price
+    const travelers = body.travelers || 1;
+    const discountPercent = pkg.discountPercent || 0;
+    const expectedAmount = Number(pkg.price) * travelers * (1 - discountPercent / 100);
+
     const booking = await this.prisma.booking.create({
       data: {
-        userId: parseInt(body.user_id, 10),
-        packageId: parseInt(body.package_id, 10),
+        userId,
+        packageId: pkg.id,
         transactionId: body.transaction_id || `TXN-${Date.now()}`,
-        amount: parseFloat(body.amount),
+        amount: expectedAmount,
         currency: body.currency || 'USD',
-        travelers: body.travelers || 1,
-        status: body.status || 'pending',
+        travelers,
+        status: (body.status || 'pending') as BookingStatus,
         customerName: body.customer_name,
         customerEmail: body.customer_email,
         customerPhone: body.customer_phone,
@@ -74,12 +110,14 @@ export class BookingsController {
     return { status: 'success', data: booking };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.booking.delete({ where: { id } });
     return { status: 'success', message: 'Booking deleted' };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
   async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     const data: any = {};

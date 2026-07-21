@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateTourGuideDto, UpdateTourGuideDto } from './dto/create-tour-guide.dto';
 
 @Controller('api/tour-guides')
 export class TourGuidesController {
@@ -109,49 +112,52 @@ export class TourGuidesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateTourGuideDto) {
     const guide = await this.prisma.tourGuide.create({
       data: {
         name: body.name,
         photo: body.photo || '',
         description: body.description || '',
-        rating: body.rating ? parseInt(body.rating, 10) : 5,
+        rating: body.rating ?? 5,
         location: body.location || '',
-        experienceYears: body.experience_years ? parseInt(body.experience_years, 10) : 0,
+        experienceYears: body.experience_years ?? 0,
         languages: body.languages || '',
-        hireCost: body.hire_cost ? parseFloat(body.hire_cost) : null,
+        hireCost: body.hire_cost ?? null,
         phone: body.phone || null,
         email: body.email || null,
-        destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
+        destinationId: body.destination_id ?? null,
       },
     });
     return { status: 'success', data: guide };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTourGuideDto) {
     const guide = await this.prisma.tourGuide.update({
       where: { id },
       data: {
         name: body.name,
         photo: body.photo,
         description: body.description,
-        rating: body.rating !== undefined ? parseInt(body.rating, 10) : undefined,
+        rating: body.rating,
         location: body.location,
-        experienceYears: body.experience_years !== undefined ? parseInt(body.experience_years, 10) : undefined,
+        experienceYears: body.experience_years,
         languages: body.languages,
-        hireCost: body.hire_cost !== undefined ? parseFloat(body.hire_cost) : undefined,
+        hireCost: body.hire_cost,
         phone: body.phone,
         email: body.email,
         destinationId: body.destination_id !== undefined
-          ? (body.destination_id ? parseInt(body.destination_id, 10) : null)
+          ? (body.destination_id ?? null)
           : undefined,
       },
     });
     return { status: 'success', data: guide };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.tourGuide.delete({ where: { id } });

@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateDestinationDto, UpdateDestinationDto } from './dto/create-destination.dto';
 
 @Controller('api/destinations')
 export class TourDestinationsController {
@@ -34,12 +37,15 @@ export class TourDestinationsController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateDestinationDto) {
+    // Support both 'title' (DTO) and 'name' (admin panel legacy)
+    const title = body.name || body.title;
     const destination = await this.prisma.tourDestination.create({
       data: {
-        slug: body.slug || (body.name || body.title || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-        title: body.name || body.title,
+        slug: body.slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+        title: title,
         country: body.country || '',
         city: body.city || '',
         locationLabel: body.location_label || '',
@@ -55,14 +61,17 @@ export class TourDestinationsController {
     return { status: 'success', data: destination };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateDestinationDto) {
     const data: any = {};
-    if (body.name || body.title) data.title = body.name || body.title;
+    const title = body.name || body.title;
+    if (title) data.title = title;
     if (body.slug) data.slug = body.slug;
     if (body.description !== undefined) data.description = body.description;
     if (body.image !== undefined) data.image = body.image;
     if (body.isActive !== undefined) data.isActive = body.isActive;
+    if (body.is_active !== undefined) data.isActive = body.is_active;
     if (body.country !== undefined) data.country = body.country;
     if (body.city !== undefined) data.city = body.city;
 
@@ -70,6 +79,7 @@ export class TourDestinationsController {
     return { status: 'success', data: destination };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.tourDestination.delete({ where: { id } });

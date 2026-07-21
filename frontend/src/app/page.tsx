@@ -29,11 +29,12 @@ const scaleIn = {
 };
 
 const galleryImages = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1597432538815-1c262b1cf777?auto=format&fit=crop&w=800&q=80', title: 'Dal Lake', location: 'Srinagar, Kashmir' },
-  { id: 2, src: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?auto=format&fit=crop&w=600&q=80', title: 'Gulmarg Meadows', location: 'Gulmarg, Kashmir' },
-  { id: 3, src: 'https://images.unsplash.com/photo-1597131686427-35eefb6f7e7f?auto=format&fit=crop&w=600&q=80', title: 'Pangong Tso', location: 'Ladakh' },
-  { id: 4, src: 'https://images.unsplash.com/photo-1586339949916-3e5457d58f1c?auto=format&fit=crop&w=600&q=80', title: 'Sonamarg Glacier', location: 'Sonamarg, Kashmir' },
-  { id: 5, src: 'https://images.unsplash.com/photo-1597432538361-a9b450880e3c?auto=format&fit=crop&w=600&q=80', title: 'Betaab Valley', location: 'Pahalgam, Kashmir' },
+  { id: 1, src: 'https://images.unsplash.com/photo-1597432538815-1c262b1cf777?auto=format&fit=crop&w=800&q=80', title: 'Dal Lake', location: 'Srinagar, Kashmir', price: '₹6,000', isVideo: false },
+  { id: 2, src: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?auto=format&fit=crop&w=600&q=80', title: 'Gulmarg Meadows', location: 'Gulmarg, Kashmir', price: '₹8,000', isVideo: false },
+  { id: 3, src: 'https://images.unsplash.com/photo-1597131686427-35eefb6f7e7f?auto=format&fit=crop&w=600&q=80', title: 'Pangong Tso', location: 'Ladakh', price: '₹15,000', isVideo: false },
+  { id: 4, src: 'https://images.unsplash.com/photo-1586339949916-3e5457d58f1c?auto=format&fit=crop&w=600&q=80', title: 'Sonamarg Glacier', location: 'Sonamarg, Kashmir', price: '₹6,000', isVideo: false },
+  { id: 5, src: 'https://images.unsplash.com/photo-1597432538361-a9b450880e3c?auto=format&fit=crop&w=600&q=80', title: 'Betaab Valley', location: 'Pahalgam, Kashmir', price: '₹5,000', isVideo: false },
+  { id: 6, src: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80', title: 'Kashmir Tour Video', location: 'Experience Kashmir', price: 'Explore', isVideo: true, videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
 ];
 
 const whyChooseUs = [
@@ -186,8 +187,8 @@ export default function Home() {
         <section className="gallery" id="gallery">
           <motion.div className="gallery-header" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="subtitle">Destinations</span>
-            <h2>Travel Stories</h2>
-            <p>Explore breathtaking destinations from around the world</p>
+            <h2>Travel <span className="accent">Stories</span></h2>
+            <p>Explore breathtaking destinations from around the world and book your dream trip</p>
           </motion.div>
           <PhotoProvider
             speed={() => 400}
@@ -197,27 +198,63 @@ export default function Home() {
           >
             <div className="gallery-grid">
               {galleryImages.map((image, index) => (
-                <PhotoView key={image.id} src={image.src}>
+                image.isVideo ? (
                   <motion.div
-                    className="gallery-item"
+                    key={image.id}
+                    className="gallery-item gallery-video-item"
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    style={{ cursor: 'pointer' }}
+                    onMouseOver={() => {
+                      const vid = document.getElementById(`gallery-vid-${image.id}`) as HTMLVideoElement;
+                      if (vid) vid.play();
+                    }}
+                    onMouseOut={() => {
+                      const vid = document.getElementById(`gallery-vid-${image.id}`) as HTMLVideoElement;
+                      if (vid) vid.pause();
+                    }}
                   >
-                    <img src={image.src} alt={image.title} loading="lazy" />
+                    <video
+                      src={image.videoUrl}
+                      muted
+                      loop
+                      playsInline
+                      className="gallery-video"
+                      id={`gallery-vid-${image.id}`}
+                    />
+                    <div className="gallery-video-badge">▶ Watch Video</div>
                     <div className="gallery-overlay">
                       <h4>{image.title}</h4>
                       <span>{image.location}</span>
+                      <Link href="/packages" className="gallery-book-link">Browse Packages →</Link>
                     </div>
                   </motion.div>
-                </PhotoView>
+                ) : (
+                  <PhotoView key={image.id} src={image.src}>
+                    <motion.div
+                      className="gallery-item"
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img src={image.src} alt={image.title} loading="lazy" />
+                      <div className="gallery-item-price">From {image.price}</div>
+                      <div className="gallery-overlay">
+                        <h4>{image.title}</h4>
+                        <span>{image.location}</span>
+                        <Link href={`/packages`} className="gallery-book-link">Book Now →</Link>
+                      </div>
+                    </motion.div>
+                  </PhotoView>
+                )
               ))}
             </div>
           </PhotoProvider>
           <motion.div className="gallery-cta" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
-            <Link href="/tourguide">View All Destinations →</Link>
+            <Link href="/packages">View All Packages →</Link>
           </motion.div>
         </section>
 
@@ -268,11 +305,13 @@ export default function Home() {
               <li><Link href="/">Home</Link></li>
               <li><Link href="/about">About</Link></li>
               <li><Link href="/tourguide">Tour Guide</Link></li>
+              <li><Link href="/packages">Packages</Link></li>
             </ul>
           </div>
           <div className="footer-box">
             <h3>Quick Links</h3>
             <ul>
+              <li><Link href="/packages">Packages</Link></li>
               <li><Link href="/login">Login</Link></li>
               <li><Link href="/signup">Register</Link></li>
             </ul>

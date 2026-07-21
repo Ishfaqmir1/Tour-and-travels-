@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateWebsiteSettingDto, UpdateWebsiteSettingDto, UpdateWebsiteSettingByKeyDto } from './dto/website-setting.dto';
 
 @Controller('api/website-settings')
 export class WebsiteSettingsController {
@@ -47,8 +50,9 @@ export class WebsiteSettingsController {
     return { status: 'success', data: { ...setting, parsedValue: value } };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateWebsiteSettingDto) {
     const setting = await this.prisma.websiteSetting.create({
       data: {
         key: body.key,
@@ -61,8 +65,9 @@ export class WebsiteSettingsController {
     return { status: 'success', data: setting };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateWebsiteSettingDto) {
     const data: any = {};
     if (body.value !== undefined) data.value = typeof body.value === 'object' ? JSON.stringify(body.value) : String(body.value);
     if (body.type) data.type = body.type;
@@ -73,8 +78,9 @@ export class WebsiteSettingsController {
     return { status: 'success', data: setting };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put('key/:key')
-  async updateByKey(@Param('key') key: string, @Body() body: any) {
+  async updateByKey(@Param('key') key: string, @Body() body: UpdateWebsiteSettingByKeyDto) {
     const data: any = {};
     if (body.value !== undefined) data.value = typeof body.value === 'object' ? JSON.stringify(body.value) : String(body.value);
 
@@ -86,6 +92,7 @@ export class WebsiteSettingsController {
     return { status: 'success', data: setting };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.websiteSetting.delete({ where: { id } });

@@ -2,13 +2,14 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { ForgotPasswordDto, ResetPasswordDto } from './dto/password-reset.dto';
 
 @Controller('api')
 export class PasswordResetController {
   constructor(private prisma: PrismaService) {}
 
   @Post('forgot-password')
-  async sendCode(@Body() body: { email: string }) {
+  async sendCode(@Body() body: ForgotPasswordDto) {
     const user = await this.prisma.user.findUnique({ where: { email: body.email } });
 
     // Generic response to avoid leaking whether an email exists
@@ -23,11 +24,10 @@ export class PasswordResetController {
     const code = crypto.randomBytes(3).toString('hex');
     const hashedCode = await bcrypt.hash(code, 10);
 
-    // Store the reset token
-    await this.prisma.passwordReset.upsert({
-      where: { email_token: { email: body.email, token: hashedCode } },
-      update: { token: hashedCode, createdAt: new Date() },
-      create: { email: body.email, token: hashedCode },
+    // Store the reset token — delete all old tokens for this email first
+    await this.prisma.passwordReset.deleteMany({ where: { email: body.email } });
+    await this.prisma.passwordReset.create({
+      data: { email: body.email, token: hashedCode },
     });
 
     // In production, send email here
@@ -40,15 +40,7 @@ export class PasswordResetController {
   }
 
   @Post('reset-password')
-  async reset(
-    @Body()
-    body: {
-      email: string;
-      code: string;
-      password: string;
-      password_confirmation: string;
-    },
-  ) {
+  async reset(@Body() body: ResetPasswordDto) {
     if (body.password !== body.password_confirmation) {
       return {
         status: 'error',

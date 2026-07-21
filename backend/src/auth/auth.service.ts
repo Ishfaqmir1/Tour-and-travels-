@@ -38,28 +38,29 @@ export class AuthService {
 
     // Super admin login
     if (email.toLowerCase() === superAdminEmail?.toLowerCase()) {
+      const existing = await this.prisma.user.findUnique({ where: { email } });
+
+      if (existing) {
+        // Use bcrypt compare against database password (supports seeded password 'password123')
+        const isPasswordValid = await bcrypt.compare(password, existing.password);
+        if (!isPasswordValid) {
+          throw new UnauthorizedException('Invalid credentials');
+        }
+        return this.generateAuthResponse(existing);
+      }
+
+      // Admin doesn't exist in DB yet — fall back to env var for first login
       if (password !== superAdminPassword) {
         throw new UnauthorizedException('Invalid credentials');
       }
-
-      let admin = await this.prisma.user.findUnique({ where: { email } });
-      if (!admin) {
-        const hashedPwd = await bcrypt.hash(password, 10);
-        admin = await this.prisma.user.create({
-          data: {
-            name: this.configService.get<string>('SUPER_ADMIN_NAME', 'THE VICEROY TOUR & TRAVELS Super Admin'),
-            email,
-            password: hashedPwd,
-          },
-        });
-      } else if (!(await bcrypt.compare(password, admin.password))) {
-        const hashedPwd = await bcrypt.hash(password, 10);
-        admin = await this.prisma.user.update({
-          where: { id: admin.id },
-          data: { password: hashedPwd },
-        });
-      }
-
+      const hashedPwd = await bcrypt.hash(password, 10);
+      const admin = await this.prisma.user.create({
+        data: {
+          name: this.configService.get<string>('SUPER_ADMIN_NAME', 'THE VICEROY TOUR & TRAVELS Super Admin'),
+          email,
+          password: hashedPwd,
+        },
+      });
       return this.generateAuthResponse(admin);
     }
 
@@ -153,7 +154,7 @@ export class AuthService {
       'admin@viceroytravels.com',
     );
     const isSuperAdmin =
-      !!user.is_super_admin || user.email?.toLowerCase() === adminEmail?.toLowerCase();
+      !!user.isSuperAdmin || !!user.is_super_admin || user.email?.toLowerCase() === adminEmail?.toLowerCase();
 
     return {
       status: 'success',

@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateHotelDto, UpdateHotelDto } from './dto/create-hotel.dto';
 
 @Controller('api/hotels')
 export class HotelsController {
@@ -43,8 +46,9 @@ export class HotelsController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateHotelDto) {
     const hotel = await this.prisma.hotel.create({
       data: {
         name: body.name,
@@ -55,14 +59,15 @@ export class HotelsController {
         stars: body.stars || 3,
         description: body.description,
         amenities: body.amenities ? JSON.stringify(body.amenities) : null,
-        pricePerNight: body.price_per_night ? parseFloat(body.price_per_night) : null,
+        pricePerNight: body.price_per_night ?? null,
       },
     });
     return { status: 'success', data: hotel };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateHotelDto) {
     const hotel = await this.prisma.hotel.update({
       where: { id },
       data: {
@@ -71,13 +76,14 @@ export class HotelsController {
         location: body.location, stars: body.stars,
         description: body.description,
         amenities: body.amenities ? JSON.stringify(body.amenities) : undefined,
-        pricePerNight: body.price_per_night ? parseFloat(body.price_per_night) : null,
+        pricePerNight: body.price_per_night ?? null,
         isActive: body.is_active,
       },
     });
     return { status: 'success', data: hotel };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.hotel.delete({ where: { id } });

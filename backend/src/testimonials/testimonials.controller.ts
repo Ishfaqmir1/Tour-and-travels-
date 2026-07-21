@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateTestimonialDto, UpdateTestimonialDto } from './dto/create-testimonial.dto';
 
 @Controller('api/testimonials')
 export class TestimonialsController {
@@ -27,8 +30,9 @@ export class TestimonialsController {
     return { status: 'success', data: testimonial };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateTestimonialDto) {
     const testimonial = await this.prisma.testimonial.create({
       data: {
         name: body.name, location: body.location, avatar: body.avatar,
@@ -38,8 +42,9 @@ export class TestimonialsController {
     return { status: 'success', data: testimonial };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTestimonialDto) {
     const testimonial = await this.prisma.testimonial.update({
       where: { id },
       data: {
@@ -51,6 +56,7 @@ export class TestimonialsController {
     return { status: 'success', data: testimonial };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.testimonial.delete({ where: { id } });

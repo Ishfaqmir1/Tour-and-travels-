@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateFaqDto, UpdateFaqDto } from './dto/create-faq.dto';
 
 @Controller('api/faqs')
 export class FaqsController {
@@ -45,8 +48,9 @@ export class FaqsController {
     return { status: 'success', data: faq };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateFaqDto) {
     const faq = await this.prisma.generalFAQ.create({
       data: {
         question: body.question,
@@ -58,8 +62,9 @@ export class FaqsController {
     return { status: 'success', data: faq };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateFaqDto) {
     const faq = await this.prisma.generalFAQ.update({
       where: { id },
       data: {
@@ -73,6 +78,7 @@ export class FaqsController {
     return { status: 'success', data: faq };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.generalFAQ.delete({ where: { id } });

@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 
 @Controller('api/payments')
 export class PaymentsController {
@@ -61,18 +62,7 @@ export class PaymentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-    @Request() req: any,
-    @Body()
-    body: {
-      guide_id: number;
-      days: number;
-      name_on_card: string;
-      card_number: string;
-      expiry: string;
-      cvv: string;
-    },
-  ) {
+  async create(@Request() req: any, @Body() body: CreatePaymentDto) {
     const guide = await this.prisma.tourGuide.findUnique({
       where: { id: body.guide_id },
     });

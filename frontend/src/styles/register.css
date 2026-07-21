@@ -2,7 +2,7 @@
 :root { --reg-primary-dark: #0a1628; --reg-primary-blue: #0f2847; --reg-teal-dark: #134e5e; --reg-teal-light: #1a6b7c; --reg-teal-accent: #20c997; --reg-accent: #ffa726; --reg-accent-dark: #f57c00; --reg-glass-bg: rgba(255,255,255,0.08); --reg-glass-border: rgba(255,255,255,0.15); --reg-glass-shadow: rgba(0,0,0,0.3); --reg-glass-blur: 20px; --reg-text-muted: #a3c4cc; --reg-text-white: #ffffff; --reg-transition: all 0.3s ease; --reg-transition-bounce: all 0.4s cubic-bezier(0.4,0,0.2,1); --reg-radius-md: 16px; --reg-radius-xl: 30px; --reg-radius-full: 50px; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Poppins', sans-serif; }
-.auth-background { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #0a1628 0%, #0f2847 25%, #134e5e 75%, #1a6b7c 100%); position: relative; overflow: hidden; }
+.auth-background { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 80px 20px 20px; background: linear-gradient(135deg, #0a1628 0%, #0f2847 25%, #134e5e 75%, #1a6b7c 100%); position: relative; overflow: hidden; }
 .auth-background-image { position: fixed; inset: 0; background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; z-index: 0; }
 .auth-background-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(10,22,40,0.75) 0%, rgba(15,40,71,0.6) 50%, rgba(19,78,94,0.7) 100%); backdrop-filter: blur(3px); z-index: 1; }
 .travel-elements { position: fixed; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
@@ -33,4 +33,10 @@ body { font-family: 'Poppins', sans-serif; }
 .bottom-text p { color: var(--reg-text-muted); font-size: 0.9rem; }
 .bottom-text a { color: var(--reg-accent); text-decoration: none; font-weight: 600; }
 .back-home { display: inline-block; margin-top: 15px; color: var(--reg-text-muted); text-decoration: none; font-size: 0.85rem; }
-@media (max-width: 576px) { .auth-right { padding: 30px 25px; } }
+@media (max-width: 576px) { 
+  .auth-right { padding: 30px 25px; }
+  .form-group input { padding: 14px 14px 14px 40px; font-size: 0.9rem; }
+  .form-group .input-icon { left: 12px; font-size: 1rem; }
+  .form-group label { left: 40px; font-size: 0.85rem; }
+  .form-box h2 { font-size: 1.4rem; }
+}

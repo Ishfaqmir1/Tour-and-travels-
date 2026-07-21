@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreateRoleDto, UpdateRoleDto } from './dto/create-role.dto';
 
 @Controller('api/roles')
 export class RolesController {
@@ -41,8 +44,9 @@ export class RolesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateRoleDto) {
     const role = await this.prisma.role.create({
       data: {
         name: body.name,
@@ -53,8 +57,9 @@ export class RolesController {
     return { status: 'success', data: role };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateRoleDto) {
     const role = await this.prisma.role.update({
       where: { id },
       data: {
@@ -66,6 +71,7 @@ export class RolesController {
     return { status: 'success', data: role };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.role.delete({ where: { id } });

@@ -95,8 +95,9 @@ export default function PaymentPage() {
             <div className="voucher-item total"><span>Total Charged</span><strong>₹{Number(success.amount || totalCost).toLocaleString('en-IN')}</strong></div>
           </div>
           <div className="voucher-note">A confirmation email has been sent to your registered email address.</div>
-          <div className="voucher-actions">
+          <div className="voucher-actions" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <Link href="/profile" className="btn-pay" style={{ textDecoration: 'none', textAlign: 'center' }}>View My Bookings</Link>
+            <Link href="/packages" className="btn-pay" style={{ textDecoration: 'none', textAlign: 'center', background: 'rgba(255,255,255,0.1)', color: '#fff', boxShadow: 'none' }}>Browse Travel Packages</Link>
           </div>
         </motion.div>
       </div>

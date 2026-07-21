@@ -1,5 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
+import { CreatePackageDto } from './dto/create-package.dto';
+import { UpdatePackageDto } from './dto/update-package.dto';
+
 @Controller('api/packages')
 export class PackagesController {
   constructor(private prisma: PrismaService) {}
@@ -147,8 +152,9 @@ export class PackagesController {
     };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post()
-  async create(@Body() body: any) {
+  async create(@Body() body: CreatePackageDto) {
     const pkg = await this.prisma.package.create({
       data: {
         slug: body.slug || body.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
@@ -159,10 +165,10 @@ export class PackagesController {
         category: body.category,
         location: body.location,
         country: body.country,
-        destinationId: body.destination_id ? parseInt(body.destination_id, 10) : null,
+        destinationId: body.destination_id ?? null,
         duration: body.duration,
-        price: parseFloat(body.price),
-        discountPercent: body.discount_percent ? parseInt(body.discount_percent, 10) : 0,
+        price: body.price,
+        discountPercent: body.discount_percent ?? 0,
         rating: body.rating || 0,
         overview: body.overview,
         highlights: body.highlights ? JSON.stringify(body.highlights) : null,
@@ -201,8 +207,9 @@ export class PackagesController {
     return { status: 'success', data: created };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePackageDto) {
     // If days provided, delete existing and recreate
     if (body.days) {
       await this.prisma.packageDay.deleteMany({ where: { packageId: id } });
@@ -219,11 +226,11 @@ export class PackagesController {
         location: body.location,
         country: body.country,
         destinationId: body.destination_id !== undefined
-          ? (body.destination_id ? parseInt(body.destination_id, 10) : null)
+          ? (body.destination_id ?? null)
           : undefined,
         duration: body.duration,
-        price: body.price ? parseFloat(body.price) : undefined,
-        discountPercent: body.discount_percent !== undefined ? parseInt(body.discount_percent, 10) : undefined,
+        price: body.price,
+        discountPercent: body.discount_percent,
         overview: body.overview,
         highlights: body.highlights ? JSON.stringify(body.highlights) : undefined,
         included: body.included ? JSON.stringify(body.included) : undefined,
@@ -261,6 +268,7 @@ export class PackagesController {
     return { status: 'success', data: updated };
   }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     await this.prisma.package.delete({ where: { id } });
